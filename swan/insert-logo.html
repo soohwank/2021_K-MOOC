@@ -1,0 +1,45 @@
+<!-- 
+Ref) https://github.com/gadenbuie/xaringan-logo
+-->
+
+<!--
+<style>
+.logo {
+  background-image: url(xaringan.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  width: 110px;
+  height: 128px;
+  z-index: 0;
+}
+</style>
+-->
+
+<style>
+.logo {
+    position: absolute;
+	top: 94%;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+	text-align: center;
+}
+</style>
+
+<script>
+document
+  .querySelectorAll(
+    '.remark-slide-content' +
+    ':not(.title-slide)' +
+    // add additional classes to exclude here, e.g.
+    ':not(.inverse)' +
+    ':not(.hide-logo)'
+  )
+  .forEach(el => {
+    el.innerHTML += '<div class="logo">컴퓨터 비전</div>';
+  });
+</script>

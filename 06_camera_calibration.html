@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>📷 카메라 캘리브레이션</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="김수환" />
+    <script src="libs/header-attrs-2.8/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+    <link href="libs/tile-view-0.2.6/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view-0.2.6/tile-view.js"></script>
+    <link href="libs/animate.css-3.7.2/animate.xaringan.css" rel="stylesheet" />
+    <link href="libs/tachyons-4.12.0/tachyons.min.css" rel="stylesheet" />
+    <script src="libs/fabric-4.3.1/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble-0.0.1/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble-0.0.1/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#FF0000"],"pen_size":3,"eraser_size":30}) })</script>
+    <script src="libs/freezeframe-5.0.2/freezeframe.min.js"></script>
+    <script src="libs/xaringanExtra-freezeframe-0.0.1/freezeframe-init.js"></script>
+    <script id="xaringanExtra-freezeframe-options" type="application/json">{"selector":"img[src$=\"gif\"]","trigger":"click","overlay":false,"responsive":true,"warnings":true}</script>
+    <link rel="stylesheet" href="swan/swan.css" type="text/css" />
+    <link rel="stylesheet" href="swan/swan-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# 📷 카메라 캘리브레이션
+## Camera Calibration
+### 김수환
+### <a href="https://www.soohwan.kim" class="uri">https://www.soohwan.kim</a>
+
+---
+
+
+
+# 목차
+
+.pull-down-8[.middle-30[![:scale 90%](figs/big-picture-00.png)]]
+
+???
+지금까지 우리는 이미지, 이미지 프로세싱, 영상 특징점 검출에 대해서 알아 보았습니다.
+
+--
+.pull-down-8[.middle-30[![:scale 90%](figs/big-picture-04.png)]]
+
+???
+이번 시간에는 카메라 캘리브레이션에 대해서 살펴보겠습니다.
+
+---
+class: inverse, center, middle, title-slide, animated pulse
+
+# 🎯  학습목표
+
+---
+# 학습목표
+
+1. 카메라 캘리브레이션
+   1. 내부 파라미터
+      1. 초점 거리
+      1. 이미지 중심 좌표
+      1. 렌즈 왜곡 계수
+   1. 외부 파라미터
+      1. 카메라 위치
+      1. 카메라 방향
+
+???
+카메라 캘리브레이션은 카메라의 내부 파라미터와 외부 파라미터를 찾는 과정입니다.
+내부 파라미터로는 카메라의 초점 거리와 이미지 중심 좌표, 렌즈 왜곡 계수가 있고,
+외부 파라미터로는 카메라의 위치와 방향이 있습니다.
+
+---
+class: inverse, center, middle, title-slide, animated pulse
+# 📷 카메라 투영
+## Camera Projection
+
+???
+내부 파라미터를 이해하기 위해서는 카메라 투영에 대해서 알아합니다.
+
+---
+# 바늘구멍 카메라 (Pinhole Camera)
+
+.pull-up-0[
+.center[
+![:scale 85%](figs/pinhole_camera.png)
+]
+]
+
+.footer-right[https://cvgl.stanford.edu/teaching/cs231a_winter1415/lecture/lecture2_camera_models_note.pdf]
+
+???
+먼저, 이상적인 카메라는 어릴적 한번쯤 가지고 놀아봤을 바늘구멍 카메라 모델을 사용합니다.
+오른쪽 끝에 있는 촛불은 가운데 있는 바늘구멍을 지나 왼쪽 끝의 이미지 플레인으로 투영됩니다.
+여기서 이미지 플레인과 바늘구멍 사이의 거리를 카메라의 초점거리라고 합니다.
+
+한편 촛불의 이미지는 그림과 같이 이미지 플레인에 뒤집혀서 맺히기 때문에 수학적으로 표현하기가 조금 복잡합니다.
+따라서 가상의 이미지 플레인을 초점 거리만큼 바늘구멍 앞에 놓으면 뒤집히지 않고 똑바른 이미지를 가상으로 생성할 수 있습니다.
+
+이제 바늘구멍 카메라를 통해 이미지가 어떻게 생성되는지 이 가상의 이미지 플레인을 통해 수학적으로 알아보도록 하겠습니다.
+
+
+---
+# 카메라 투영 (Camera Projection)
+
+.pull-up-2[
+- 카메라는 3차원 공간의 점을 2차원 이미지 평면으로 투영한다.
+]
+
+.pull-up-2[
+.center[
+![:scale 55%](figs/camera-projection-01-02.png)
+]
+]
+
+???
+앞에서 살펴본 바와 같이 카메라는 3차원 공간의 점을 2차원 이미지 평면으로 투영하는 장치입니다.
+여기서 3차원 공간의 점을 대문자 X, 그리고 그 점에서 출발한 빛이 바늘구멍 C를 통과해서 2차원 가상 이미지 평면에 맺히 점을 소문자 x라고 부르도록 하겠습니다.
+
+---
+# 카메라 투영 (Camera Projection)
+
+.pull-up-2[
+- `\(xz\)`-평면: 두 닯은 꼴 삼각형에 의해서 `\(x\)`값과 `\(z\)`값은 비례한다.
+]
+
+.pull-up-0[
+.pull-left[
+.center[
+![:scale 90%](figs/camera-projection-02-02.png)
+]
+]
+
+.pull-right[
+.center[
+![:scale 90%](figs/camera-projection-04.png)
+.font120[
+`$$x:f = X:Z \;\Rightarrow\; x = f\frac{X}{Z}$$`
+]
+]
+]
+]
+
+???
+먼저 xz 평면을 보면 빨간색으로 나타낸 두 개의 닯은 꼴 삼각형을 찾을 수 있습니다.
+따라서 x와 z값은 정비례합니다.
+즉, x:f = X:Z가 성립해서 x = fX/Z로 나타낼 수 있습니다.
+
+---
+# 카메라 투영 (Camera Projection)
+
+.pull-up-2[
+- `\(yz\)`-평면: 두 닯은 꼴 삼각형에 의해서 `\(y\)`값과 `\(z\)`값은 비례한다.
+]
+
+.pull-left[
+.center[
+![:scale 90%](figs/camera-projection-03-02.png)
+]
+]
+
+.pull-right[
+.center[
+![:scale 90%](figs/camera-projection-05.png)
+.font120[
+`$$y:f = Y:Z \;\Rightarrow\; y = f\frac{Y}{Z}$$`
+]
+]
+]
+
+???
+마찬가지로 yz 평면을 보면 파란색으로 나타낸 두 개의 닯은 꼴 삼각형을 찾을 수 있습니다.
+따라서 y와 z값은 정비례합니다.
+즉, y:f = Y:Z가 성립해서 y = fY/Z로 나타낼 수 있습니다.
+
+---
+# 카메라 투영 (Camera Projection)
+
+.pull-up-2[
+- 카메라는 3차원의 점을 2차원으로 투영한다. (카메라 좌표계)
+]
+
+.pull-up-2[
+.pull-left[
+.center[
+![:scale 100%](figs/camera-projection-06.png)
+]
+]
+
+.pull-right[
+- Camera: `\(^{C}\tilde{\mathbf{p}} \in \mathbb{P}^3 \mapsto ^{F}\tilde{\mathbf{p}} \in \mathbb{P}^2\)`
+`$$\begin{align}&amp;\begin{cases}x = \color{green}{f}\frac{X}{Z}\\ y = \color{green}{f}\frac{Y}{Z}\end{cases} \\&amp;\Rightarrow\; \begin{bmatrix}x\\y\\1\end{bmatrix} \sim \begin{bmatrix}\color{green}{f} &amp; 0 &amp; 0 &amp; 0\\ 0 &amp; \color{green}{f} &amp; 0 &amp; 0\\0&amp;0&amp;1&amp;0\end{bmatrix}\begin{bmatrix}X\\Y\\Z\\1\end{bmatrix}\end{align}$$`
+]
+]
+
+???
+앞에서 구한 두개의 식, x = fX/Z, y = fY/Z를 이용하면 3차원 공간의 점 대문자 X를 이미지 평면상의 점 소문자 x로 변환하는 식을 행렬과 벡터의 곱으로 표현할 수 있습니다.
+주의할 점을 두 점을 모두 공차 좌표계로 표현했다는 것입니다.
+행렬과 벡터의 곱을 풀면 x=fX, y=fY, z=Z가 됩니다. 따라서 마지막 좌표인 z로 x와 y를 나눠주면 앞에서 구한 식과 같다는 것을 알 수 있습니다.
+공차 좌표계의 장점은 카메라에 의한 비선형 투영을 이렇게 행렬과 벡터의 곱인 선형으로 표현할 수 있다는 것입니다.
+
+---
+# 카메라 투영 (Camera Projection)
+
+.pull-up-2[
+- 이미지 좌표계의 원점은 이미지의 왼쪽위에 있다.
+]
+
+.pull-up-2[
+.pull-left[
+.center[
+![:scale 100%](figs/camera-projection-07.png)
+]
+]
+
+.pull-right[
+- Camera: `\(^{C}\mathbf{p} \in \mathbb{P}^3 \mapsto ^{F}\mathbf{p} \in \mathbb{P}^2\)`
+`$$\begin{align}&amp;\begin{cases}x = \color{green}{f}\frac{X}{Z} + \color{orange}{c_x}\\ y = \color{green}{f}\frac{Y}{Z} + \color{orange}{c_y}\end{cases} \\&amp;\Rightarrow\; \begin{bmatrix}x\\y\\1\end{bmatrix} \sim \begin{bmatrix}\color{green}{f} &amp; 0 &amp; \color{orange}{c_x}&amp;0\\ 0 &amp; \color{green}{f} &amp; \color{orange}{c_y}&amp;0\\0&amp;0&amp;1&amp;0\end{bmatrix}\begin{bmatrix}X\\Y\\Z\\1\end{bmatrix}\end{align}$$`
+]
+]
+
+???
+그러나 첫시간에 살펴본 것처럼 이미지 좌표계의 원점은 이미지 중심이 아니라 이미지의 왼쪽 위에 존재합니다.
+따라서 이미지 중심점은 이제 (0, 0)이 아니라 특정한 좌표 (Cx, Cy)가 될 것입니다.
+이를 식에 반영하면 다음과 같이 3번째 열에 이미지 중심 좌표  Cx, Cy를 적어 넣어야합니다.
+
+
+---
+# 카메라 투영 (Camera Projection)
+
+.pull-up-2[
+- 일반적으로 3차원 공간의 점은 카메라 좌표계가 아니라 전역 좌표계로 표현된다.
+]
+
+.pull-up-2[
+.pull-left[
+.center[
+![:scale 100%](figs/camera-projection-08.png)
+]
+]
+
+.pull-right-50[
+.font80[
+- Rigid Body Motion: `\(^{G}\mathbf{p} \in \mathbb{P}^3 \mapsto ^{C}\mathbf{p} \in \mathbb{P}^3\)`
+`$$\begin{align}\begin{bmatrix}^{C}X\\^{C}Y\\^{C}Z\\1\end{bmatrix} &amp;= \left[\begin{array}{r|r}\color{red}{^{C}\mathbf{R}_G} &amp; \color{blue}{^{C}\mathbf{t}_G}\\\hline \mathbf{0}^\top &amp; 1\end{array}\right]\begin{bmatrix}^{G}X\\^{G}Y\\^{G}Z\\1\end{bmatrix}\end{align}$$`
+- Camera: `\(^{C}\mathbf{p} \in \mathbb{P}^3 \mapsto ^{F}\mathbf{p} \in \mathbb{P}^2\)`
+`$$\begin{align}&amp;\begin{bmatrix}^Fx\\^Fy\\1\end{bmatrix} \sim \begin{bmatrix}\color{green}{f} &amp; 0 &amp; \color{orange}{c_x} &amp; 0\\ 0 &amp; \color{green}{f} &amp; \color{orange}{c_y} &amp; 0\\0&amp;0&amp;1 &amp; 0\end{bmatrix}\begin{bmatrix}^{C}X\\^{C}Y\\^{C}Z\\1\end{bmatrix}\end{align}$$`
+]
+]
+]
+
+???
+한편 일반적으로 3차원 공간의 점은 카메라 좌표계가 아니라 전역 좌표계로 표현됩니다. 
+따라서 전역 좌표계에서 바라본 카메라의 위치와 자세의 역변환, 즉 카메라 좌표계에서 바라본 전역 좌표계의 위치 `\(\color{blue}{^{C}\mathbf{t}_G}\)`와 방향 `\(\color{red}{^{C}\mathbf{R}_G}\)`를 이용하면 전역 좌표계의 점 `\(^G\tilde{\mathbf{X}}\)`를 카메라 좌표계의 점 `\(^C\tilde{\mathbf{X}}\)`로 변환할 수 있습니다.
+
+그리고 카메라 좌표계의 점 `\(^C\tilde{\mathbf{X}}\)`를 앞에서 살펴본 바와 같이 `\(^F\tilde{\mathbf{x}}\)`로 투영되게 됩니다.
+
+---
+# 카메라 투영 (Camera Projection)
+
+.pull-up-3[
+.font115[
+`$$\begin{align}
+\begin{bmatrix}^{F}x\\^{F}y\\1\end{bmatrix} 
+&amp;\sim \left[\begin{array}{rrr|r}\color{green}{f} &amp; 0 &amp; \color{orange}{c_x} &amp; 0\\ 0 &amp; \color{green}{f} &amp; \color{orange}{c_y} &amp; 0\\0&amp;0&amp;1 &amp; 0\end{array}\right]\begin{bmatrix}^{C}X\\^{C}Y\\^{C}Z\\1\end{bmatrix} \\
+&amp;= \left[\begin{array}{r|r}\color{green}{\mathbf{K}} &amp; \mathbf{0}\end{array}\right] \left[\begin{array}{r|r}\color{red}{^{C}\mathbf{R}_G} &amp; \color{blue}{^{C}\mathbf{t}_G}\\\hline \mathbf{0}^\top &amp; 1\end{array}\right]\begin{bmatrix}^{G}X\\^{G}Y\\^{G}Z\\1\end{bmatrix}\\
+&amp;= \color{green}{\mathbf{K}}  \left[\begin{array}{r|r}\color{red}{^{C}\mathbf{R}_G} &amp; \color{blue}{^{C}\mathbf{t}_G}\end{array}\right]\begin{bmatrix}^{G}X\\^{G}Y\\^{G}Z\\1\end{bmatrix}\\\Rightarrow\;&amp;\tilde{\mathbf{x}} \sim \color{magenta}{\mathbf{P}}\tilde{\mathbf{X}}
+\end{align}$$`
+]
+]
+
+???
+이 두개의 좌표 변환을 조합하면 전역 좌표계에서 바라본 3차원 공간의 점 `\(\tilde{\mathbf{X}}\)`를 2차원 이미지 평면 상의 점 `\(\tilde{\mathbf{x}}\)`로 투영시키는 투영행렬 `\(\color{magenta}{\mathbf{P}}\)`를 구할 수 있습니다.
+
+---
+# 투영 행렬 (Projection Matrix)
+
+.pull-up-2[
+- 전역 좌표계에서 이미지 좌표계로 투영: `\(^{G}\tilde{\mathbf{p}} \in \mathbb{P}^3 \mapsto ^{F}\tilde{\mathbf{p}} \in \mathbb{P}^2\)`
+`$$\tilde{\mathbf{x}} \sim \color{magenta}{\mathbf{P}}\tilde{\mathbf{X}}$$`
+- 투영 행렬 (Projection Matrix)
+`$$\color{magenta}{\mathbf{P}} = \color{green}{\mathbf{K}}  \left[\begin{array}{c|c}\color{red}{^{C}\mathbf{R}_G} &amp; \color{blue}{^{C}\mathbf{t}_G}\end{array}\right] \in \mathbb{R}^{3\times 4}$$`
+
+.pull-left[
+- Intrinsic Parameters
+   - Camera Matrix
+`$$\color{green}{\mathbf{K}}  = \left[\begin{array}{rrr}\color{green}{f} &amp; 0 &amp; \color{orange}{c_x}\\ 0 &amp; \color{green}{f} &amp; \color{orange}{c_y}\\0&amp;0&amp;1\end{array}\right] \in \mathbb{R}^{3\times 3}$$`
+]
+.pull-right[
+- Extrinsic Parameters
+   - Inverse of Camera Pose
+`$$\color{red}{^{C}\mathbf{R}_G} \in \mathbb{R}^{3\times 3}, \;\color{blue}{^{C}\mathbf{t}_G} \in \mathbb{R}^{3}$$`
+]
+]
+
+???
+즉, 행의 개수가 3개이고 열의 개수가 4개인 투영행렬 `\(\color{magenta}{\mathbf{P}}\)`는 3x3 카메라 행렬 `\(\color{green}{\mathbf{K}}\)`에 카메라 좌표계에서 바라본 전역 좌표계의 회전행렬과 평행이동 벡터를 조합한 3x4 행렬의 곱으로 구할 수 있습니다.
+
+여기서 카메라 행렬의 원소인 초점 거리 `\(f\)`와 이미지 중심 좌표 `\((C_x, C_y)\)`를 카메라의 내부 파라미터라고 하고, 카메라 좌표계에서 바라본 전역 좌표계의 위치와 방향을 카메라의 외부 파라미터라고 부릅니다.
+
+---
+class: inverse, center, middle, title-slide, animated pulse
+# 🌏 호모그래피 행렬
+## Homography Matrix
+
+???
+여기서 잠깐 특수한 투영행렬의 일종인 호모그래피 행렬에 대해서 살펴보겠습니다.
+
+---
+# 호모그래피 행렬 (Homography Matrix)
+
+.pull-up-3[
+.font90[
+- 전역 좌표계에서 이미지 좌표계로 투영: `\(^{G}\tilde{\mathbf{p}} \in \mathbb{P}^3 \mapsto ^{F}\tilde{\mathbf{p}} \in \mathbb{P}^2\)`
+`$$\begin{align}\tilde{\mathbf{x}} &amp;\sim \color{magenta}{\mathbf{P}}\tilde{\mathbf{X}}\\ \begin{bmatrix}x\\y\\1\end{bmatrix} &amp;\sim \begin{bmatrix}p_{11} &amp; p_{12} &amp; p_{13} &amp; p_{14}\\ p_{21} &amp; p_{22} &amp; p_{23} &amp; p_{24} \\ p_{31} &amp; p_{32} &amp; p_{33} &amp; p_{34}\end{bmatrix} \begin{bmatrix}X\\Y\\Z\\1\end{bmatrix}\end{align}$$`
+- 평면 위 모든 점 ( `\(Z = 0\)` ): 한 이미지에서 다른 이미지로 변환: `\(^{F_1}\tilde{\mathbf{p}} \in \mathbb{P}^2 \mapsto ^{F_2}\tilde{\mathbf{p}} \in \mathbb{P}^2\)`
+`$$\begin{align}\tilde{\mathbf{x}} &amp;\sim \color{magenta}{\mathbf{H}}\tilde{\mathbf{X}}\\ \begin{bmatrix}x\\y\\1\end{bmatrix} &amp;\sim \begin{bmatrix}p_{11} &amp; p_{12} &amp; p_{14}\\ p_{21} &amp; p_{22} &amp; p_{24} \\ p_{31} &amp; p_{32} &amp; p_{34}\end{bmatrix} \begin{bmatrix}X\\Y\\1\end{bmatrix}\end{align}$$`
+]
+]
+
+???
+3x4 투영행렬 `\(\color{magenta}{\mathbf{P}}\)`를 `\(p_{11}\)`부터 `\(p_{34}\)`까지 나타냈을 때, 만약에 3차원 공간위의 점 X가 모두 한 평면 위에 존재한다면, 전역 좌표계를 Z=0이 되도록 적당히 선택할 수 있습니다.
+
+따라서 위의 식에서 Z=0을 대입하면 3x4 투영행렬에서 3번째 열이 없는 것과 같은 효과가 있습니다.
+즉, 3x3 호모그래피 행렬 `\(\color{magenta}{\mathbf{H}}\)`는 한 이미지의 모든 점 `\(X\)`를 또 다른 이미지의 모든 점 `\(x\)`로 변환하는 행렬이 됩니다.
+
+---
+# 명함 스캔 앱
+
+.pull-down-8[
+.center[
+![:scale 70%](figs/perspective-transformation.png)
+]
+]
+
+???
+호모그래피의 가장 대표적인 응용은 바로 명함 스캔 앱입니다.
+왼쪽과 같이 책상 위에 놓여져 있는 명함 위의 점들은 모두 평면상의 점이기 때문에 호모그래피 행렬을 곱해주면 오른쪽과 같이 똑바른 직사각형 형태로 변환할 수 있습니다.
+
+---
+# 입체 그림
+
+.pull-up-2[
+.pull-left[
+.center[
+![:scale 100%](figs/julian-beever-globe-chalk.jpg)
+]
+]
+
+.pull-right[
+.center[
+![:scale 100%](figs/chalk-globe-from-side.jpg)
+]
+]
+]
+
+
+.footer-right[https://coolopticalillusions.com/standing-on-top-of-the-world-optical-illusion-chalk-art/]
+
+???
+이는 마치 2차원 평면 위에 그려진 지구의 입체 그림에 호모그래피 행렬에 곱해서 우리의 눈에는 마치 입체적인 것처럼 보이지만, 다른 시점에서 바라보면 또다른 호모그래피 행렬이 곱해져서 마치 찌그러진 지구의 모습으로 투영되는 것과 같은 원리입니다.
+
+---
+class: inverse, center, middle
+# 🔎 렌즈 왜곡
+## Lens Distortion
+
+???
+지금까지 바늘구멍 카메라를 이용하여 3차원 공간의 점을 2차원 이미지 평면으로 투영하는 방법에 대해서 알아 보았습니다.
+그러나 실제로 우리가 현실에서 사용하는 카메라는 대부분 렌즈가 있는 카메라 입니다. 
+그리고 렌즈는 완벽한 구형이 아니기 때문에 왜곡이 발생합니다.
+
+---
+# 렌즈 왜곡 (Lens Distortion)
+
+.pull-down-6[
+.center[
+![:scale 95%](figs/lens-distortion.png)
+]
+]
+
+.footer-right[https://fivedots.coe.psu.ac.th/~ad/jg/nuiN13/depthProcessing.pdf]
+
+???
+카메라 렌즈의 왜곡은 줌심으로부터 방사형으로 볼록 또는 오목해지는 radial distortion과 x축, y축 방향으로 shearing되는 tangential distortion으로 구분할 수 있습니다.
+
+---
+# 렌즈 왜곡 변수(Lens Distortion Parameters)
+
+- Radial Distortion
+`$$\begin{align}x_{corrected} &amp;= x(1+\color{red}{k_1}r^2 + \color{blue}{k_2}r^4 + \color{green}{k_3}r^6)\\ y_{corrected} &amp;= y(1+\color{red}{k_1}r^2 + \color{blue}{k_2}r^4 + \color{green}{k_3}r^6)\end{align}$$`
+- Tangential Distortion
+`$$\begin{align}x_{corrected} &amp;= x + [2\color{magenta}{p_1}xy + \color{orange}{p_2}(r^2+2x^2)]\\ y_{corrected} &amp;= y + [\color{magenta}{p_1}(r^2+2y^2) + 2\color{orange}{p_2}xy]\end{align}$$`
+- Distortion Coefficients
+`$$(\color{red}{k_1}, \color{blue}{k_2}, \color{magenta}{p_1}, \color{orange}{p_2}, \color{green}{k_3})$$`
+
+???
+그리고 이 두 가지 종류의 렌즈 왜곡은 다음과 같은 식으로 모델링됩니다.
+이렇게 모델링에 사용된 다섯개의 변수 `\((\color{red}{k_1}, \color{blue}{k_2}, \color{magenta}{p_1}, \color{orange}{p_2}, \color{green}{k_3})\)`를 렌즈 왜곡 계수라고 부르고 카메라의 내부 파라미터에 포함시킵니다.
+
+---
+class: inverse, center, middle
+# ⚙️ 카메라 캘리브레이션
+## Camera Calibration
+
+???
+카메라 캘리브레이션은 앞에서 설명한 카메라의 내부 파라미터와 외부 파라미터를 실제 카메라를 통해 찍은 이미지들을 이용해서 구하는 방법입니다.
+
+---
+# 체커 보드 패턴
+
+.pull-up-0[
+.center[
+![:scale 50%](figs/chessboardpattern.jpg)
+]
+]
+
+???
+먼저 이렇게 서양의 장기판과 같은 흑백의 체커 보드를 프린트해서 판판한 보드에 붙이고, 여러장의 사진을 찍습니다.
+여기서 예로 보여드린 9x7 체커 보드 패턴은 가운데 8x6=48개의 코너점을 갖고 있습니다. 
+그리고 우리는 이미 체커 보드 패턴의 사각형 크기를 알고 있기 때문에
+
+---
+# 3D-2D 대응점
+
+.pull-up-2[
+.pull-left[
+.font85[
+- `\(^{G}\mathbf{X} \in \mathbb{R}^3\)`: `\(9\times 7\)` 패턴의 48개 코너 좌표
+`$$\begin{array}{cccc}(0, 5s, 0) &amp; (s, 5s, 0) &amp; \cdots &amp; (7s, 5s, 0)\\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ (0, s, 0) &amp; (s, s, 0) &amp; \cdots &amp; (7s, s, 0)\\ (0, 0, 0) &amp; (s, 0, 0) &amp; \cdots &amp; (7s, 0, 0)\end{array}$$`
+]
+]
+
+.pull-right[
+.font85[
+- `\(^{F}\mathbf{x} \in \mathbb{R}^2\)`: 이미지 상에서 찾은 코너들
+`$$\begin{array}{cccc}(x_{11}, y_{11}) &amp; (x_{12}, y_{12}) &amp; \cdots &amp; (x_{18}, y_{18}) \\ (x_{21}, y_{21}) &amp; (x_{22}, y_{22}) &amp; \cdots &amp; (x_{28}, y_{28}) \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ (x_{61}, y_{61}) &amp; (x_{62}, y_{62}) &amp; \cdots &amp; (x_{68}, y_{68})\end{array}$$`
+]
+]
+]
+
+???
+3차원 좌표계에서 바라본 48개의 코너점들의 좌표를 왼쪽과 같이 정의할 수 있습니다.
+
+그리고 이전 시간에 배운 대로 카메라를 통해 찍은 이미지에서 코너점을 추출하면 오른쪽과 같이 48개의 2차원 이미지 평면상의 대응점을 찾을 수 있습니다.
+
+
+---
+# 3D-2D 대응점
+
+.pull-up-2[
+.font75[
+- 전역 좌표계에서 이미지 좌표계로 투영: `\(^{G}\mathbf{p} \in \mathbb{P}^3 \mapsto ^{F}\mathbf{p} \in \mathbb{P}^2\)`
+`$$\begin{align}\tilde{\mathbf{x}} \sim \color{magenta}{\mathbf{P}}\tilde{\mathbf{X}}\\ \begin{bmatrix}x\\y\\1\end{bmatrix} &amp;\sim \begin{bmatrix}p_{11} &amp; p_{12} &amp; p_{13} &amp; p_{14}\\ p_{21} &amp; p_{22} &amp; p_{23} &amp; p_{24} \\ p_{31} &amp; p_{32} &amp; p_{33} &amp; p_{34}\end{bmatrix} \begin{bmatrix}X\\Y\\Z\\1\end{bmatrix}\end{align}$$`
+
+.pull-up-2[
+- 투영 행렬 (Projection Matrix)
+`$$\color{magenta}{\mathbf{P}} = \color{green}{\mathbf{K}}  \left[\begin{array}{r|r}\color{red}{^{C}\mathbf{R}_G} &amp; \color{blue}{^{C}\mathbf{t}_G}\end{array}\right] \in \mathbb{R}^{3\times 4}$$`
+]
+
+.pull-up-1[
+.pull-left-33[
+- Intrinsic Parameters
+   - Camera Matrix
+`$$\color{green}{\mathbf{K}}  = \left[\begin{array}{rrr}\color{green}{f} &amp; 0 &amp; \color{orange}{c_x}\\ 0 &amp; \color{green}{f} &amp; \color{orange}{c_y}\\0&amp;0&amp;1\end{array}\right] \in \mathbb{R}^{3\times 3}$$`
+]
+.pull-left-33[
+- Extrinsic Parameters
+   - Inverse of Camera Pose
+`$$\color{red}{^{C}\mathbf{R}_G} \in \mathbb{R}^{3\times 3}, \;\color{blue}{^{C}\mathbf{t}_G} \in \mathbb{R}^{3}$$`
+]
+.pull-left-33[
+- Distortion Coefficients
+`$$(\color{red}{k_1}, \color{blue}{k_2}, \color{magenta}{p_1}, \color{orange}{p_2}, \color{green}{k_3})$$`
+]
+]
+
+]
+]
+
+???
+이렇게 3차원 공간과 2차원 평면의 대응점들을 가지고 최적화 방법을 이용하면 카메라의 내부 파라미터와 외부 파라미터를 모두 구할 수 있습니다.
+
+여기서 카메라의 고유한 성질은 카메라의 내부 파라미터만 해당하기 때문에 카메라의 외부 파라미터는 버리고, 내부 파라미터만 추후에 이용하게 됩니다.
+
+---
+# 3D-2D 대응점 찾기 결과
+
+.pull-up-2[
+.center[
+![:scale 40%](figs/calib_pattern.jpg)
+]
+]
+
+.footer-right[https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_calib3d/py_calibration/py_calibration.html]
+
+???
+지금 보시는 그림은 카메라로 찍은 체커 보드 패턴에서 코너점을 찾은 결과입니다.
+
+---
+# 카메라 캘리브레이션 결과 &amp;mdash; 왜곡 보정
+
+.pull-up-2[
+.pull-left[
+.center[
+![:scale 78%](figs/calib_radial.jpg)
+]
+]
+
+.pull-right[
+.center[
+![:scale 80%](figs/calib_result2.jpg)
+]
+]
+]
+
+.footer-right[https://docs.opencv.org/master/dc/dbb/tutorial_py_calibration.html]
+
+???
+이렇게 찾은 코너점들을 이용하면 왼쪽 그림과 같이 렌즈에 의해서 왜곡된 이미지를 오른쪽과 같이 보정할 수 있습니다.
+
+---
+class: inverse, center, middle, title-slide, animated pulse
+# 📝 요약
+
+---
+# 카메라 캘리브레이션
+
+.pull-up-2[
+.font80[
+- 투영 행렬 (Projection Matrix)
+`$$\color{magenta}{\mathbf{P}} = \color{green}{\mathbf{K}}  \left[\begin{array}{r|r}\color{red}{^{C}\mathbf{R}_G} &amp; \color{blue}{^{C}\mathbf{t}_G}\end{array}\right] \in \mathbb{R}^{3\times 4}$$`
+- 카메라 행렬 (Camera Matrix): Intrinsic Parameters
+`$$\color{green}{\mathbf{K}}  = \left[\begin{array}{rrr}\color{green}{f} &amp; 0 &amp; \color{orange}{c_x}\\ 0 &amp; \color{green}{f} &amp; \color{orange}{c_y}\\0&amp;0&amp;1\end{array}\right] \in \mathbb{R}^{3\times 3}$$`
+- 카메라 역자세 (Inverse of Camera Pose): Extrinsic Parameters
+`$$\color{red}{^{C}\mathbf{R}_G} \in \mathbb{R}^{3\times 3}, \;\color{blue}{^{C}\mathbf{t}_G} \in \mathbb{R}^{3}$$`
+- 렌즈 왜곡 계수 (Distortion Coefficients)
+`$$(\color{red}{k_1}, \color{blue}{k_2}, \color{magenta}{p_1}, \color{orange}{p_2}, \color{green}{k_3})$$`
+]
+]
+
+???
+지금까지 우리는 카메라 캘리브레이션을 이용해서 카메라의 내부 파라미터와 왜부 파라미터를 구하는 방법에 대해서 배웠습니다.
+
+---
+# 총정리
+
+.pull-down-8[.middle-30[![:scale 90%](figs/big-picture-00.png)]]
+
+???
+지금시간까지 우리는 
+(1) 첫번째 컴퓨터 비전에서 사용되는 이미지의 구조에 대해서 학습하고,
+(2) 이미지에서 노이즈를 제거하고, 미분값을 구하는 방법에 대해서 배웠습니다.
+(3) 또한 이미지에서 특이한 부분인 코너를 찾는 방법과,
+(4) 카메라의 내부/외부 파라미터를 찾는 이미지 캘리브레인션에 대해서 배웠습니다.
+
+컴퓨터 비전은 이외에도 물체인식, 물체 추적, 얼굴인식, 사람인식, 3차원 복원 등 수 많은 분야가 있습니다.
+지금까지 비록 짧은 시간동안이지만 컴퓨터 비전의 기초에 대해서 함께 배워보았는데요. 
+지금 학습한 내용이 여러분이 컴퓨터 비전, 나아가 인공지능을 이해하는데 작은 도움이 됐기를 바랍니다.
+감사합니다.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="swan/macros.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "default",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+<!-- 
+Ref) https://github.com/gadenbuie/xaringan-logo
+-->
+
+<!--
+<style>
+.logo {
+  background-image: url(xaringan.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  width: 110px;
+  height: 128px;
+  z-index: 0;
+}
+</style>
+-->
+
+<style>
+.logo {
+    position: absolute;
+	top: 94%;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+	text-align: center;
+}
+</style>
+
+<script>
+document
+  .querySelectorAll(
+    '.remark-slide-content' +
+    ':not(.title-slide)' +
+    // add additional classes to exclude here, e.g.
+    ':not(.inverse)' +
+    ':not(.hide-logo)'
+  )
+  .forEach(el => {
+    el.innerHTML += '<div class="logo">컴퓨터 비전</div>';
+  });
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

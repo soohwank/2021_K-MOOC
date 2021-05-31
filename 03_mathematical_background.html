@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>🧮 수학적 배경지식</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="김수환" />
+    <script src="libs/header-attrs-2.8/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+    <link href="libs/tile-view-0.2.6/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view-0.2.6/tile-view.js"></script>
+    <link href="libs/animate.css-3.7.2/animate.xaringan.css" rel="stylesheet" />
+    <link href="libs/tachyons-4.12.0/tachyons.min.css" rel="stylesheet" />
+    <script src="libs/fabric-4.3.1/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble-0.0.1/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble-0.0.1/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#FF0000"],"pen_size":3,"eraser_size":30}) })</script>
+    <script src="libs/freezeframe-5.0.2/freezeframe.min.js"></script>
+    <script src="libs/xaringanExtra-freezeframe-0.0.1/freezeframe-init.js"></script>
+    <script id="xaringanExtra-freezeframe-options" type="application/json">{"selector":"img[src$=\"gif\"]","trigger":"click","overlay":false,"responsive":true,"warnings":true}</script>
+    <link rel="stylesheet" href="swan/swan.css" type="text/css" />
+    <link rel="stylesheet" href="swan/swan-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# 🧮 수학적 배경지식
+## Mathematical Background
+### 김수환
+### <a href="https://www.soohwan.kim" class="uri">https://www.soohwan.kim</a>
+
+---
+
+
+
+# 목차
+
+.pull-down-8[.middle-30[![:scale 90%](figs/big-picture-00.png)]]
+--
+.pull-down-8[.middle-30[![:scale 90%](figs/big-picture-03.png)]]
+
+
+???
+이번 시간에는 다음 수업에 필요한 몇가지 수학적 배경지식을 살펴보도록 하겠습니다.
+
+
+---
+class: inverse, center, middle, title-slide, animated pulse
+
+# 🎯  학습목표
+
+---
+# 학습목표
+
+1. 테일러 급수
+   - 함수의 근사화
+1. 고유값과 고유벡터
+   - 고유값과 고유벡터의 성질
+   - 고유값 분해의 기하학적 의미
+1. 공분산 행렬
+   - 공분산 행렬의 고유값과 고유벡터의 성질
+   - 공분산 행렬의 고유값 분해의 기하학적 의미
+
+???
+이번 시간의 학습 목표는
+1. 먼저 테일러 급수에 대해서 배우고 이를 이용하여 함수를 1차 다항식으로 근사화하는 방법에 대해서 배우도록 하겠습니다.
+1. 다음으로 고유값과 고유벡터의 정의와 성질에 대해서 배우고 고유값 분해의 기하학적 의미에 대해서 배우도록 하겠습니다.
+1. 마지막으로 공분산 행렬의 정의에 대해서 배우고 공분산 행렬의 고유값과 고유벡터의 성질과 고유값 분해의 기하학적 의미에 대해서 살펴보도록 하겠습니다.
+
+---
+class: inverse, center, middle, title-slide, animated pulse
+# 💤 테일러 급수
+## Taylor Series
+
+???
+첫번째로 복습할 수학적 배경지식은 테일러급수 입니다.
+
+---
+# 테일러 급수 (Taylor Series)
+
+.font90[
+- 1D: Taylor Expansion of `\(f(x)\)` at `\(\color{magenta}{x}=\color{red}{\bar{x}}+\color{blue}{\delta x}\)`
+`$$\color{magenta}{f(\bar{x}+\delta x)} = \color{green}{f(\bar{x})} + \color{red}{f'(\bar{x})}\color{blue}{\delta x} + \color{red}{\frac{f''(\bar{x})}{2!}}\color{blue}{\delta x^2}+  \cdots$$`
+]
+
+???
+테일러 급수는 임의의 함수를 무한한 다항식의 합으로 바꾸는 방법입니다.
+
+
+(1) 독립변수가 1개인 함수 `\(f(x)\)`를 `\(\color{magenta}{x}=\color{red}{\bar{x}}+\color{blue}{\delta x}\)`에서 테일러급수를 한번 전개해 보겠습니다.
+여기서 `\(\color{red}{\bar{x}}\)`는 기존에 함수값을 알고 있는 `\(x\)`의 좌표이고 `\(\color{blue}{\delta x}\)`는 `\(x\)`에 대한 아주 작은 변화량을 의미합니다.
+
+식에서 보시다시피 새로운 `\(x\)`값 `\(\color{red}{\bar{x}}+\color{blue}{\delta x}\)`에서의 함수값 `\(\color{magenta}{f(\bar{x}+\delta x)}\)`는 기존의 함수값 `\(\color{green}{f(\bar{x})}\)`에, 일차미분계수 `\(\color{red}{f'(\bar{x})}\)`와 `\(x\)`의 변화량 `\(\color{blue}{\delta x}\)`를 곲한 값을 더하고, 이어서 이차미분계수 `\(\color{red}{f''(\bar{x})}\)`에 `\(x\)`의 변화량 `\(\color{blue}{\delta x}^2\)`를 곱하고 `\(2!\)`로 나눠준 값을 더한 뒤, 이러한 항들을 무한히 반복하여 더한 값입니다.
+
+즉, 테일러급수는 기존에 `\(x=\color{red}{\bar{x}}\)`에서 함수값과 미분값을 알고 있을 때, `\(x\)`가 `\(\color{blue}{\delta x}\)`만큼 변화하면 함수값 `\(f\)`가 얼마나 변화하는지를 설명한다고 할 수 있습니다.
+
+--
+.font90[
+- 2D: Taylor Expansion of `\(f(x, y)\)` at `\(\color{magenta}{x}=\color{red}{\bar{x}}+\color{blue}{\delta x}, \; \color{magenta}{y}=\color{red}{\bar{y}}+\color{blue}{\delta y}\)`
+`$$\color{magenta}{f(\bar{x}+\delta x, \bar{y}+\delta y)} = \color{green}{f(\bar{x}, \bar{y})} + \color{red}{f_x}\color{blue}{\delta x} + \color{red}{f_y}\color{blue}{\delta y} + \frac{1}{2!}\left(\color{red}{f_x^2}\color{blue}{\delta x^2} + 2\color{red}{f_x f_y}\color{blue}{\delta x \delta y} + \color{red}{f_y^2}\color{blue}{\delta y^2}\right) + \cdots$$`
+   - `\(f_x = \frac{\partial f}{\partial x}\Bigr|_{\substack{x=\bar{x}\\y=\bar{y}}}, \;\;f_y = \frac{\partial f}{\partial y}\Bigr|_{\substack{x=\bar{x}\\y=\bar{y}}}\)`
+]
+
+???
+(2) 이번에는 독립변수가 2개인 함수 `\(f(x, y)\)`를 비슷한 방법으로 테일러급수를 구해보겠습니다.
+
+
+식에서 보시다시피 새로운 `\(x\)`, `\(y\)`값에서의 함수값 `\(\color{magenta}{f(\bar{x}+\delta x, \bar{y}+\delta y)}\)`는 `\(x=\color{red}{\bar{x}}, \; y=\color{red}{\bar{y}}\)`에서의 함수값 `\(\color{green}{f(\bar{x}, \bar{y})}\)`에, 함수 `\(f\)`의 `\(x\)`방향 편미분계수 `\(\color{red}{f_x}\)`와 `\(x\)`의 변화량 `\(\color{blue}{\delta x}\)`를 곱한 값을 더하고, 함수 `\(f\)`의 `\(y\)`방향 편미분계수 `\(\color{red}{f_y}\)`와 `\(y\)`의 변화량 `\(\color{blue}{\delta y}\)`를 곱한 값을 더한 뒤, 이러한 방식으로 2차 편미분, 3차 편미분 등이 포함된 항을 무한히 반복하여 더한 값입니다.
+
+여기서 중요한 것은 독립변수 `\(x\)`와 `\(y\)`의 변화량 `\(\color{blue}{\delta x}, \color{blue}{\delta y}\)`가 매우 작은 값이라는 것입니다. 따라서 `\(\color{blue}{\delta x}, \color{blue}{\delta y}\)`의 제곱, 세제곱 등은 매우 작은 값이기 때문에 테일러급수의 합에서 미치는 영향이 매우 적다고 할 수 있습니다.
+
+---
+# 테일러 급수: 1차 다항식 근사 (First Order Approximation)
+
+.font90[
+- 1D: Taylor Expansion of `\(f(x)\)` at `\(\color{magenta}{x}=\color{red}{\bar{x}}+\color{blue}{\delta x}\)`
+`$$\require{cancel} \color{magenta}{f(\bar{x}+\delta x)} = \color{green}{f(\bar{x})} + \color{red}{f'(\bar{x})}\color{blue}{\delta x} \cancel{+ \color{red}{\frac{f''(\bar{x})}{2!}}\color{blue}{\delta x^2}+  \cdots}$$`
+]
+
+.font90[
+- 2D: Taylor Expansion of `\(f(x, y)\)` at `\(\color{magenta}{x}=\color{red}{\bar{x}}+\color{blue}{\delta x}, \; \color{magenta}{y}=\color{red}{\bar{y}}+\color{blue}{\delta y}\)`
+`$$\require{cancel} \color{magenta}{f(\bar{x}+\delta x, \bar{y}+\delta y)} = \color{green}{f(\bar{x}, \bar{y})} + \color{red}{f_x}\color{blue}{\delta x} + \color{red}{f_y}\color{blue}{\delta y} \cancel{+ \frac{1}{2!}\left(\color{red}{f_x^2}\color{blue}{\delta x^2} + 2\color{red}{f_x f_y}\color{blue}{\delta x \delta y} + \color{red}{f_y^2}\color{blue}{\delta y^2}\right) + \cdots}$$`
+   - `\(f_x = \frac{\partial f}{\partial x}\Bigr|_{\substack{x=\bar{x}\\y=\bar{y}}}, \;\;f_y = \frac{\partial f}{\partial y}\Bigr|_{\substack{x=\bar{x}\\y=\bar{y}}}\)`
+]
+
+???
+따라서 이렇게 `\(\color{blue}{\delta x}, \color{blue}{\delta y}\)`의 2차 이상의 차수항이 포함된 항들을 제거해주면 함수 `\(f(x)\)` 혹은 함수 `\(f(x,y)\)`를 1차 다항식으로 근사화할 수 있습니다.
+
+---
+# 테일러 급수: 1차 다항식 근사 (First Order Approximation)
+
+.font90[
+- 1D: First Order Taylor Approximation of `\(f(x)\)` at `\(\color{magenta}{x} = \color{red}{\bar{x}}+\color{blue}{\delta x}\)`
+`$$\color{magenta}{f(\bar{x}+\delta x)} \approx \color{green}{f(\bar{x})} + \color{red}{f'(\bar{x})}\color{blue}{\delta x}$$`
+]
+
+.font90[
+- 2D: First Order Taylor Expansion of `\(f(x, y)\)` at `\(\color{magenta}{x}=\color{red}{\bar{x}}+\color{blue}{\delta x}, \; \color{magenta}{y}=\color{red}{\bar{y}}+\color{blue}{\delta y}\)`
+`$$\begin{align}&amp;\color{magenta}{f(\bar{x}+\delta x, \bar{y}+\delta y)} \approx \color{green}{f(\bar{x}, \bar{y})} + \color{red}{f_x}\color{blue}{\delta x} + \color{red}{f_y}\color{blue}{\delta y}\end{align}$$`
+]
+
+???
+(1) 테일러 급수를 이용하여 함수를 근사화한 결과 함수의 고차미분계수 및 고차편미분계수가 포함된 항은 사라지고, 일차미분계수 혹은 일차편미분계수가 `\(\color{blue}{\delta x}, \color{blue}{\delta y}\)`의 계수로 남기 때문 우리는 이것을 1차 다항식으로의 근사화라고 부릅니다.
+
+
+--
+
+.pull-down-8[
+.font90[
+- 2D Image: First Order Taylor Expansion of `\(I(x, y)\)` at `\(\color{magenta}{x}=\color{red}{\bar{x}}+\color{blue}{\delta x}, \; \color{magenta}{y}=\color{red}{\bar{y}}+\color{blue}{\delta y}\)`
+`$$\begin{align}&amp;\color{magenta}{I(\bar{x}+\delta x, \bar{y}+\delta y)} \approx \color{green}{I(\bar{x}, \bar{y})} + \color{red}{I_x}\color{blue}{\delta x} + \color{red}{I_y}\color{blue}{\delta y}\end{align}$$`
+]
+]
+
+
+???
+(2) 한편, 앞에서 설명드린대로 흑백이미지는 `\((x, y)\)`라는 좌표의 밝기값인 intensity를 알려주는 함수라고 생각할 수 있기 때문에 `\(I(x, y)\)`라고 할 수있으며, 이것을 1차 다항식으로 근사화하면 `\(x\)`방향의 이미지 그래디언트인 `\(\color{red}{I_x}\)`, `\(y\)`방향의 이미지 그래디언트인 `\(\color{red}{I_y}\)`가 각각 `\(\color{blue}{\delta x}, \color{blue}{\delta y}\)`의 계수가 되는 것을 알 수 있습니다.
+
+흑백이미지에 대한 1차 다항식 근사화를 어떻게 활용하는지는 다음 시간에 자세히 설명드리도록 하겠습니다.
+
+---
+class: inverse, center, middle, title-slide, animated pulse
+# 🌠 고유값과 고유벡터
+## Eigenvalues and Eigenvectors
+
+???
+두번째로 필요한 수학적 배경지식은 고유값과 고유벡터입니다.
+
+---
+# 고유값과 고유벡터 &amp;mdash; 정방행렬
+
+.pull-up-3[
+1. 고유값과 고유벡터 (Eigenvalues and Eigenvectors)
+`$$\color{blue}{\mathbf{A}}\color{green}{\mathbf{x}} = \color{red}{\lambda} \color{green}{\mathbf{x}}$$`
+   - `\(\color{blue}{\mathbf{A}} \in \mathbb{R}^{n \times n}\)`: 정방행렬
+   - `\(\color{red}{\lambda} \in \mathbb{C}\)`: 고유값
+   - `\(\color{green}{\mathbf{x}} \in \mathbb{R}^n\)`: 고유벡터
+1. 고유값 분해 (Eigenvalue Decomposition)
+`$$\color{blue}{\mathbf{A}} = \color{green}{\mathbf{X}}\color{red}{\boldsymbol\Lambda}\color{green}{\mathbf{X}^{-1}} = \begin{bmatrix}|&amp;&amp;|\\ \color{green}{\mathbf{x}_1}&amp;\cdots&amp; \color{green}{\mathbf{x}_n}\\|&amp;&amp;|\end{bmatrix}\begin{bmatrix}\color{red}{\lambda_1}&amp;&amp;0\\&amp;\ddots&amp;\\0&amp;&amp;\color{red}{\lambda_n}\end{bmatrix}\begin{bmatrix}|&amp;&amp;|\\ \color{green}{\mathbf{x}_1}&amp;\cdots&amp; \color{green}{\mathbf{x}_n}\\|&amp;&amp;|\end{bmatrix}^{-1}$$`
+   - `\(\color{green}{\mathbf{X}} \in \mathbb{R}^{n \times n}\)`: 고유벡터를 열벡터들로 하는 정방행렬
+   - `\(\color{red}{\boldsymbol\Lambda} \in \mathbb{R}^{n \times n}\)`: 고유값을 대각원소에 갖는 대각행렬
+]
+
+???
+(1) 먼저 고유값과 고유벡터는 행의 개수와 열의 개수가 같은 정방행렬에 대해서만 정의가 됩니다. 행의 개수가 `\(n\)`개이고 열의 개수가 `\(n\)`개인 정방행렬 `\(\color{blue}{\mathbf{A}}\)`가 주어졌을 때, `\(n\)`차원 벡터 `\(\color{green}{\mathbf{x}}\)`를 행렬 `\(\color{blue}{\mathbf{A}}\)`에 곱하여 선형변환하여도 그 방향이 바뀌지 않는 경우, 이때의 벡터 `\(\color{green}{\mathbf{x}}\)`를 행렬 `\(\color{blue}{\mathbf{A}}\)`의 고유벡터라고 하고, 이때 벡터가 몇 배 확대 또는 축소 되는지를 행렬 `\(\color{blue}{\mathbf{A}}\)`의 고유값 `\(\color{red}{\lambda}\)`라고 합니다. 
+
+주의하실 점은 행렬의 고유값과 고유벡터는 항상 쌍으로 존재한다는 것입니다. 또한 행렬의 고유값은 실수 뿐만 아니라 복소수가 될 수 있고, 고유벡터는 크기에 상관이 없기 때문에 단위벡터로 정규화 나타낸다는 것입니다.
+
+(2) 행렬의 고유값과 고유벡터를 알면 이를 이용해서 그 행렬을 분해할 수 있습니다.
+일반적으로 `\(n \times n\)` 행렬은 최대 `\(n\)`개의 실수 고유값을 가질 수 있는데, 이때 `\(n\)`개의 고유벡터들을 각각 행렬의 열벡터로 가지고 있는 행렬을 `\(\color{green}{\mathbf{X}}\)`라고 하고, `\(n\)`개의 고유값을 대각선상에 가지고 있는 행렬을 `\(\color{red}{\boldsymbol\Lambda}\)`라고 하면, 행렬 `\(\color{blue}{\mathbf{A}}\)`는 `\(\color{green}{\mathbf{X}}\color{red}{\boldsymbol\Lambda}\color{green}{\mathbf{X}^{-1}}\)`로 분해가 됩니다. 즉, 마치 자연수를 다른 자연수의 곱으로 소인수분해하듯 정방행렬을 다른 정방행렬들의 곱으로 분해할 수 있습니다.
+
+---
+# 고유값과 고유벡터 &amp;mdash; 대칭행렬
+
+1. 고유값과 고유벡터 (Eigenvalues and Eigenvectors)
+`$$\color{blue}{\mathbf{S}}\color{green}{\mathbf{x}} = \color{red}{\lambda} \color{green}{\mathbf{x}}$$`
+   - `\(\color{blue}{\mathbf{S}} \in \mathbb{R}^{n \times n}\)`: 대칭행렬
+   - `\(\color{red}{\lambda} \in \mathbb{R}\)`: 고유값 .red[&amp;rArr; 대칭행렬의 고유값은 항상 실수이다.]
+   - `\(\color{green}{\mathbf{x}} \in \mathbb{R}^n \text{ s.t. } \mathbf{x}_i^\top\mathbf{x}_j = 0\)`: 고유벡터 .red[&amp;rArr; 대칭행렬의 고유벡터는 서로 수직이다.]
+1. 고유값 분해 (Eigenvalue Decomposition)
+`$$\color{blue}{\mathbf{S}} = \color{green}{\mathbf{Q}}\color{red}{\boldsymbol\Lambda}\color{green}{\mathbf{Q}^\top}$$`
+   - `\(\color{green}{\mathbf{Q}} \in \mathbb{R}^{n \times n}\)`: 고유벡터를 열벡터들로 하는 직교행렬 (Orthonormal Matrix)
+   - `\(\color{red}{\boldsymbol\Lambda} \in \mathbb{R}^{n \times n}\)`: 고유값을 대각원소에 갖는 대각행렬
+
+???
+(1) 한편, 주어진 행렬이 정방행렬일 뿐만 아니라, 전치를 하여도 자기 자신과 똑같은 대칭행렬 `\(\color{blue}{\mathbf{S}}\)`인 경우, 고유값은 항상 실수가 되고, 서로 다른 고유벡터는 서로 수직하게 되는 성질이 있습니다.
+
+(2) 서로 수직하는 고유벡터를 크기가 1이 되도록 정규화한 뒤 열벡터로 모아서 행렬 `\(\color{green}{\mathbf{Q}}\)`를 만들면 전치행렬이 역행렬이 되는 직교행렬이 됩니다.
+
+따라서 대칭행렬 `\(\color{blue}{\mathbf{S}}\)`는 `\(\color{green}{\mathbf{Q}}\color{red}{\boldsymbol\Lambda}\color{green}{\mathbf{Q}^\top}\)`로 분해되어 마치 벡터를 직교행렬 `\(\color{green}{\mathbf{Q}^\top}\)`에 의해서 회전이동하고, 대각행렬 `\(\color{red}{\boldsymbol\Lambda}\)`를 통해 확대 또는 축소한 뒤, 다시 직교행렬 `\(\color{green}{\mathbf{Q}}\)`에 의해 원래대로 역회전하는 선형변환의 조합으로 생각할 수 있습니다.
+
+---
+# 고유값과 고유벡터 &amp;mdash; 양의 준-정부호 행렬
+
+1. 고유값과 고유벡터 (Eigenvalues and Eigenvectors)
+`$$\color{blue}{\mathbf{M}}\color{green}{\mathbf{x}} = \color{red}{\lambda} \color{green}{\mathbf{x}}$$`
+   - `\(\color{blue}{\mathbf{M}} \succcurlyeq 0 \in \mathbb{R}^{n \times n} \text{ s.t. } \forall \mathbf{v}, \mathbf{v}^\top\color{blue}{\mathbf{M}}\mathbf{v} \ge 0\)`: 양의 준-정부호 행렬 (Positive Semidefinite Matrix)
+   - `\(\color{red}{\lambda} \ge 0 \in \mathbb{R}\)`: 고유값 .red[&amp;rArr; 양의 정부호행렬의 고유값은 항상 음이 아닌 실수이다.]
+   - `\(\color{green}{\mathbf{x}} \in \mathbb{R}^n \text{ s.t. } \mathbf{x}_i^\top\mathbf{x}_j = 0\)`: 고유벡터 .red[&amp;rArr; 대칭행렬의 고유벡터는 서로 수직이다.]
+1. 고유값 분해 (Eigenvalue Decomposition)
+`$$\color{blue}{\mathbf{M}} = \color{green}{\mathbf{Q}}\color{red}{\boldsymbol\Lambda}\color{green}{\mathbf{Q}^\top}$$`
+   - `\(\color{green}{\mathbf{Q}} \in \mathbb{R}^{n \times n}\)`: 고유벡터를 열벡터들로 하는 직교행렬 (Orthonormal Matrix)
+   - `\(\color{red}{\boldsymbol\Lambda} \in \mathbb{R}^{n \times n}\)`: 음이 아닌 고유값을 대각원소에 갖는 대각행렬
+
+???
+(1) 만일, 주어진 행렬이 정방행렬일 뿐만 아니라, 대칭행렬이고, 또한 더 나아가 0이 아닌 임의의 벡터로 이차형식을 계산하면 항상 0보다 크거나 같은 양의 준-정부호 행렬 `\(\color{blue}{\mathbf{M}}\)`이라면, 고유값은 항상 음이 아닌 실수, 즉 0 혹은 양수가 되는 성질을 가지고 있습니다.
+
+(2) 마찬가지로 양의 준-정부호 행렬 `\(\color{blue}{\mathbf{M}}\)`은 `\(\color{green}{\mathbf{Q}}\color{red}{\boldsymbol\Lambda}\color{green}{\mathbf{Q}^\top}\)`로 분해되어 마치 벡터를 회전, 확대 또는 축소, 역회전하는 선형변환의 조합으로 분해할 수 있습니다.
+
+---
+# 고유값과 고유벡터 &amp;mdash; 양의 준-정부호 행렬
+
+- 이차 형식 (Quadratic Form): `\(\|\color{blue}{\mathbf{u}}\|=\|\color{blue}{\mathbf{v}}\|=1\)`
+`$$\begin{align}
+\color{blue}{\mathbf{u}}^\top\color{red}{\mathbf{M}}\color{blue}{\mathbf{u}} 
+&amp;= \color{blue}{\mathbf{u}}^\top\left(\color{green}{\mathbf{Q}}\color{red}{\boldsymbol\Lambda}\color{green}{\mathbf{Q}^\top}\right)\color{blue}{\mathbf{u}}\\
+&amp;= \left(\color{green}{\mathbf{Q}}^\top\color{blue}{\mathbf{u}}\right)^\top\color{red}{\sqrt{\boldsymbol\Lambda}}\color{red}{\sqrt{\boldsymbol\Lambda}}\left(\color{green}{\mathbf{Q}^\top}\color{blue}{\mathbf{u}}\right)\\
+&amp;= \color{blue}{\mathbf{v}}^\top\color{red}{\sqrt{\boldsymbol\Lambda}}\color{red}{\sqrt{\boldsymbol\Lambda}}\color{blue}{\mathbf{v}} \quad\leftarrow \color{green}{\mathbf{Q}}: \text{Rotation/Reflection}\\
+&amp;= \color{blue}{\mathbf{v}}^\top\color{red}{\sqrt{\boldsymbol\Lambda}}^\top\color{red}{\sqrt{\boldsymbol\Lambda}}\color{blue}{\mathbf{v}}\\
+&amp;= \left(\color{red}{\sqrt{\boldsymbol\Lambda}}\color{blue}{\mathbf{v}}\right)^\top\left(\color{red}{\sqrt{\boldsymbol\Lambda}}\color{blue}{\mathbf{v}}\right)\\
+&amp;=\|\color{red}{\sqrt{\boldsymbol\Lambda}}\color{blue}{\mathbf{v}}\|^2
+\end{align}$$`
+
+.middle-83[
+.font120[
+.magenta[
+양의 준-정부호 행렬 `\(\color{red}{\mathbf{M}}\)`의 고유값이 모두 커야 이차 형식의 값이 크다.
+]
+]
+]
+
+???
+참고로 양의 준-정부호 행렬 `\(\color{red}{\mathbf{M}}\)`과 임의의 단위벡터 `\(\color{blue}{\mathbf{u}}\)`를 이용하여 이차 형식 `\(\color{blue}{\mathbf{u}}^\top\color{red}{\mathbf{M}}\color{blue}{\mathbf{u}}\)`를 만들면 양의 준-정부호 행렬 `\(\color{red}{\mathbf{M}}\)`을 고유값분해를 통해 `\(\color{green}{\mathbf{Q}}\color{red}{\boldsymbol\Lambda}\color{green}{\mathbf{Q}^\top}\)`로 분해면 `\(\color{blue}{\mathbf{u}}^\top\left(\color{green}{\mathbf{Q}}\color{red}{\boldsymbol\Lambda}\color{green}{\mathbf{Q}^\top}\right)\color{blue}{\mathbf{u}}\)`가 됩니다. 여기서 앞의 두 행렬의 곱 `\(\color{blue}{\mathbf{u}}^\top\color{green}{\mathbf{Q}}\)`를 `\(\left(\color{green}{\mathbf{Q}}^\top\color{blue}{\mathbf{u}}\right)^\top\)`로 바꾸고 대각선에 있는 원소가 음수가 아닌 대각행렬 `\(\color{red}{\boldsymbol\Lambda}\)`를 각 원소에 제곱근을 취한 `\(\color{red}{\sqrt{\boldsymbol\Lambda}}\)`의 곱으로 분해하면 `\(\left(\color{green}{\mathbf{Q}}^\top\color{blue}{\mathbf{u}}\right)^\top\color{red}{\sqrt{\boldsymbol\Lambda}}\color{red}{\sqrt{\boldsymbol\Lambda}}\left(\color{green}{\mathbf{Q}^\top}\color{blue}{\mathbf{u}}\right)\)`가 됩니다.
+
+여기서 직교행렬 `\(\color{green}{\mathbf{Q}}^\top\)`는 단위벡터 `\(\color{blue}{\mathbf{u}}\)`를 회전 또는 대칭시키기 때문에 `\(\color{green}{\mathbf{Q}^\top}\color{blue}{\mathbf{u}}\)`는 새로운 단위벡터 `\(\color{blue}{\mathbf{v}}\)`로 변환된다고 할 수 있습니다. 마지막으로 `\(\color{blue}{\mathbf{v}}^\top\color{red}{\sqrt{\boldsymbol\Lambda}}\color{red}{\sqrt{\boldsymbol\Lambda}}\color{blue}{\mathbf{v}}\)`는 벡터 `\(\color{red}{\sqrt{\boldsymbol\Lambda}}\color{blue}{\mathbf{v}}\)`의 크기의 제곱과 같아집니다.
+
+즉, 양의 준-정부호 행렬 `\(\color{red}{\mathbf{M}}\)`의 이차형식 `\(\color{blue}{\mathbf{u}}^\top\color{red}{\mathbf{M}}\color{blue}{\mathbf{u}}\)`는 단위벡터 `\(\color{blue}{\mathbf{u}}\)`를 회전이동하고 행렬 `\(\color{red}{\mathbf{M}}\)`의 고유값 `\(\color{red}{\lambda}\)`로 각 축의 방향으로 확대 또는 축소시킨뒤 벡터 크기의 제곱을 구하는 것과 같기 때문에, 양의 준-정부호 행렬 `\(\color{red}{\mathbf{M}}\)`의 고유값이 모두 클때 이차 형식의 값이 크게 되는 성질이 있습니다.
+
+---
+class: inverse, center, middle, title-slide, animated pulse
+# 🌌 공분산 행렬
+## Covariance Matrix
+
+???
+마지막으로 다룰 내용은 공분산 행렬입니다.
+
+---
+# 평균 벡터 (Mean Vector)
+
+- 샘플 벡터 (Sample Vector)
+`$$\mathbf{x}_i = \begin{bmatrix}\color{red}{x_i}\\\color{blue}{y_i}\end{bmatrix}, \;\;i = 1, ..., n$$`
+- 평균 벡터 (Mean Vector)
+`$$\color{green}{\bar{\mathbf{x}}} = \begin{bmatrix}\color{green}{\bar{x}}\\ \color{green}{\bar{y}}\end{bmatrix} = \frac{1}{n}\begin{bmatrix}\sum_{i=1}^n \color{red}{x_i}\\ \sum_{i=1}^n \color{blue}{y_i}\end{bmatrix}$$`
+
+???
+2차원 공간에서 `\(i=1,...n\)`인 `\(n\)`개의 점 `\(\mathbf{x}_i\)`가 주어졌을 때, 평균벡터 `\(\color{green}{\bar{\mathbf{x}}}\)`는 각각 `\(x\)` 좌표값의 평균인 `\(\color{green}{\bar{x}}\)`, `\(y\)` 좌표값의 평균인 `\(\color{green}{\bar{y}}\)`를 원소로 갖는 벡터입니다.
+
+---
+# 공분산 행렬 (Covariance Matrix)
+
+- 분산 (Variances)
+.pull-up-2[
+`$$\color{red}{\sigma_{xx}^2} = \frac{1}{n}\sum_{i=1}^n (\color{red}{x_i} - \color{green}{\bar{x}})^2, \;\;\color{blue}{\sigma_{yy}^2} = \frac{1}{n}\sum_{i=1}^n (\color{blue}{y_i} - \color{green}{\bar{y}})^2$$`
+]
+- 공분산 (Covariance)
+.pull-up-2[
+`$$\color{magenta}{\sigma_{xy}^2} = \frac{1}{n}\sum_{i=1}^n (\color{red}{x_i} - \color{green}{\bar{x}})(\color{blue}{y_i} - \color{green}{\bar{y}})$$`
+]
+- 공분산 행렬 (Covariance Matrix)
+.pull-up-2[
+`$$\color{green}{\boldsymbol\Sigma} = \begin{bmatrix}\color{red}{\sigma_{xx}^2} &amp; \color{magenta}{\sigma_{xy}^2}\\ \color{magenta}{\sigma_{xy}^2} &amp; \color{blue}{\sigma_{yy}^2}\end{bmatrix} = \frac{1}{n}\begin{bmatrix}\sum_{i=1}^n (\color{red}{x_i} - \color{green}{\bar{x}})^2 &amp; \sum_{i=1}^n (\color{red}{x_i} - \color{green}{\bar{x}})(\color{blue}{y_i} - \color{green}{\bar{y}})\\\sum_{i=1}^n (\color{red}{x_i} - \color{green}{\bar{x}})(\color{blue}{y_i} - \color{green}{\bar{y}}) &amp; \sum_{i=1}^n (\color{blue}{y_i} - \color{green}{\bar{y}})^2\end{bmatrix}$$`
+]
+
+???
+이때, `\(n\)`개의 점에 대해서 각각의 `\(x\)` 좌표값 `\(\color{red}{x_i}\)`에서 `\(x\)`의 평균 `\(\color{green}{\bar{x}}\)`을 뺀 편차 제곱의 평균을 `\(x\)`에 대한 분산 `\(\color{red}{\sigma_{xx}^2}\)`라고 하고, `\(y\)` 좌표값 `\(\color{blue}{y_i}\)`에서 `\(y\)`의 평균 `\(\color{green}{\bar{y}}\)`를 뺀 편차 제곱의 평균을 `\(y\)`에 대한 분산 `\(\color{red}{\sigma_{yy}^2}\)`라고 부릅니다.
+
+반면 공분산은 `\(n\)`개의 점에 대해서 각각의 `\(x\)` 좌표값 `\(\color{red}{x_i}\)`에서 `\(x\)`의 평균 `\(\color{green}{\bar{x}}\)`을 뺀 편차에 `\(y\)` 좌표값 `\(\color{red}{y_i}\)`에서 `\(y\)`의 평균 `\(\color{green}{\bar{y}}\)`을 뺀 편차를 곱해서 평균을 구한 것입니다. 
+
+먼저 살펴본 분산은 `\(x\)`축과 `\(y\)`축 각각에 대해서 점들이 얼마나 넓게 분포하고 있는지를 나타내는 반면, 두번쨰로 살펴본 공분산의 부호는 `\(x\)` 좌표값과 `\(y\)` 좌표값이 얼마나 선형을 이루는 지를 말해줍니다. 즉, `\(x\)` 좌표값이 커질 때, `\(y\)` 좌표값도 커지는 경향을 가지면 양수, 그 반대의 경우에는 음수의 공분산을 갖습니다.
+
+주의할 점은 분산과 공분산 모두, 점들의 평균이 원점에 오도록 평행이동시킨 뒤에 계산한다는 것입니다.
+
+공분산 행렬은 지금까지 구한 분산과 공분산을 각 차원의 순서에 맞게 행렬로 모아 놓은 것입니다.
+
+---
+# 공분산 행렬 (Covariance Matrix)
+
+.pull-up-4[
+.pull-left[
+.center[
+![:scale 90%](figs/covariance_matrix.png)
+]
+]
+
+.pull-right[
+.font90[
+- 점과 평균 ( `\(i = 1, ..., n\)` )
+`$$\mathbf{x}_i = \begin{bmatrix}x_i\\y_i\end{bmatrix}, \;\;\color{magenta}{\bar{\mathbf{x}}} = \color{magenta}{\begin{bmatrix}\bar{x}\\\bar{y}\end{bmatrix}}$$`
+- 공분산 행렬: 양의 준-정부호 행렬
+`$$\color{green}{\boldsymbol\Sigma} = \begin{bmatrix}\color{red}{\sigma_{xx}^2} &amp; \color{magenta}{\sigma_{xy}^2}\\ \color{magenta}{\sigma_{xy}^2} &amp; \color{blue}{\sigma_{yy}^2}\end{bmatrix} \succcurlyeq 0$$`
+- 고유값, 고유벡터, 고유값 분해
+`$$\color{green}{\boldsymbol\Sigma} = \color{green}{\mathbf{Q}}\color{red}{\boldsymbol\Lambda}\color{green}{\mathbf{Q}^\top} = \color{green}{\mathbf{Q}}\begin{bmatrix}\color{red}{\lambda_1} &amp; 0\\ 0 &amp; \color{blue}{\lambda_2}\end{bmatrix}\color{green}{\mathbf{Q}^\top}$$`
+]
+]
+]
+
+.footer-right[https://en.wikipedia.org/wiki/Covariance_matrix]
+
+???
+이러한 공분산 행렬은 매우 특이한 성질을 가지고 있습니다.
+첫째, 공분산 행렬은 양의 준-정부호 행렬입니다. 즉, 임의의 벡터로 이차 형식을 만들면 항상 0 또는 양의 값을 가집니다. 
+따라서 공분산 행렬의 고유값은 항상 0 또는 양의 값을 가지고 서로다른 고유벡터는 서로 직교합니다.
+
+둘째, 2차원 공간에서 공분산 행렬의 고유값과 고유벡터는 점들이 어떻게 퍼져있는지를 설명해 줍니다. 즉, 2차원 공간에 흩어진  점들에 타원을 피팅했을 때 타원의 장축과 단축의 길이가 공분산 행렬의 고유값 `\(\color{red}{\lambda_1}\)`, `\(\color{blue}{\lambda_2}\)`가 되며, 장축과 단축 방향의 단위벡터가 공분산 행렬의 고유벡터가 됩니다. 
+
+공분산 행렬을 고유값 분해하면 정규부포를 따르는 확률로 무작위로 샘플링된 점들에 대해서 공분산 행렬의 고유벡터인 타원의 장축과 단축이 각각 `\(x\)`, `\(y\)`축이 되도록 점들을 회전시키고, 각 축의 방향으로 고유값 `\(\color{red}{\lambda_1}\)`, `\(\color{blue}{\lambda_2}\)` 만큼 확대 또틑 축소시킨 뒤 다시 `\(x\)`, `\(y\)`축이 공분산 행렬의 고유벡터가 되도록 회전시키는 선형변환의 조합이라고 생각할 수 있습니다.
+
+---
+class: inverse, center, middle, title-slide, animated pulse
+# 📝 요약
+
+---
+# 수학적 배경지식
+
+- 테일러 급수 &amp;rArr; 함수의 1차 다항식으로의 근사
+`$$\begin{align}&amp;\color{magenta}{I(\bar{x}+\delta x, \bar{y}+\delta y)} \approx \color{green}{I(\bar{x}, \bar{y})} + \color{red}{I_x}\color{blue}{\delta x} + \color{red}{I_y}\color{blue}{\delta y}\end{align}$$`
+- 고유값과 고유벡터 &amp;rArr; 고유값분해 (양의 준-정부호 행렬 = 회전-확대/축소-역회전)
+`$$\color{blue}{\mathbf{M}} = \color{green}{\mathbf{Q}}\color{red}{\boldsymbol\Lambda}\color{green}{\mathbf{Q}^\top}$$`
+- 공분산 행렬 = 양의 준-정부호 행렬
+`$$\begin{align}
+\color{green}{\boldsymbol\Sigma} 
+= \color{green}{\mathbf{Q}}\color{red}{\boldsymbol\Lambda}\color{green}{\mathbf{Q}^\top}= \color{green}{\mathbf{Q}}\begin{bmatrix}\color{red}{\lambda_1} &amp; 0\\ 0 &amp; \color{blue}{\lambda_2}\end{bmatrix}\color{green}{\mathbf{Q}^\top}
+\end{align}$$`
+
+???
+지금까지 다음 시간에 필요한 수학적 배경지식으로
+1. 첫번째 테일러 급수를 이용하여 임의의 함수를 1차 다항식으로 근사하는 방법을 배웠습니다.
+1. 또한 양의 준-정부호 행렬의 고유값은 항상 0 또는 양수이고 서로 다른 고유벡터는 직교하기 때문에, 고유값 분해를 하면 점들을 회전-확대 또는 축소-역회전 시키는 선형변환의 조합으로 분해할 수 있다는 것을 배웠습니다.
+1. 마지막으로 2차원 공간에서 여러개의 점들이 주어졌을 때 점들의 평균이 원점이 되도록 모든 점들을 평행이동 하고 분산과 공분산을 계산하여 공분산 행렬을 만드는 것을 배웠습니다. 특히, 공분산 행렬은 양의 준-정부호 행렬이기 때문에 점들을 고유벡터가 `\(x\)`, `\(y\)`축이 되도록 회전시키고, `\(x\)`, `\(y\)`축으로 고유값만큼 확대 또는 축소 시킨 뒤, `\(x\)`, `\(y\)`축이 고유벡터가 되도록 다시 회전시키는 선형변환으로 이해할 수 있다는 것을 배웠습니다.
+
+그러면 다음 시간에는 이렇게 학습한 수학적 배경지식을 이용하여 이미지에서 특이점을 찾는 방법에 대해서 학습하도록 하겠습니다. 감사합니다.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="swan/macros.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "default",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+<!-- 
+Ref) https://github.com/gadenbuie/xaringan-logo
+-->
+
+<!--
+<style>
+.logo {
+  background-image: url(xaringan.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  width: 110px;
+  height: 128px;
+  z-index: 0;
+}
+</style>
+-->
+
+<style>
+.logo {
+    position: absolute;
+	top: 94%;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+	text-align: center;
+}
+</style>
+
+<script>
+document
+  .querySelectorAll(
+    '.remark-slide-content' +
+    ':not(.title-slide)' +
+    // add additional classes to exclude here, e.g.
+    ':not(.inverse)' +
+    ':not(.hide-logo)'
+  )
+  .forEach(el => {
+    el.innerHTML += '<div class="logo">컴퓨터 비전</div>';
+  });
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

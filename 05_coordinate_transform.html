@@ -1,0 +1,1735 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>🚀 좌표 변환</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="김수환" />
+    <script src="libs/header-attrs-2.8/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+    <link href="libs/tile-view-0.2.6/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view-0.2.6/tile-view.js"></script>
+    <link href="libs/animate.css-3.7.2/animate.xaringan.css" rel="stylesheet" />
+    <link href="libs/tachyons-4.12.0/tachyons.min.css" rel="stylesheet" />
+    <script src="libs/fabric-4.3.1/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble-0.0.1/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble-0.0.1/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#FF0000"],"pen_size":3,"eraser_size":30}) })</script>
+    <script src="libs/freezeframe-5.0.2/freezeframe.min.js"></script>
+    <script src="libs/xaringanExtra-freezeframe-0.0.1/freezeframe-init.js"></script>
+    <script id="xaringanExtra-freezeframe-options" type="application/json">{"selector":"img[src$=\"gif\"]","trigger":"click","overlay":false,"responsive":true,"warnings":true}</script>
+    <link rel="stylesheet" href="swan/swan.css" type="text/css" />
+    <link rel="stylesheet" href="swan/swan-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# 🚀 좌표 변환
+## Coordinate Transformations
+### 김수환
+### <a href="https://www.soohwan.kim" class="uri">https://www.soohwan.kim</a>
+
+---
+
+
+
+# 목차
+
+.pull-down-8[.middle-30[![:scale 90%](figs/big-picture-00.png)]]
+--
+.pull-down-8[.middle-30[![:scale 90%](figs/big-picture-04.png)]]
+
+---
+class: inverse, center, middle, title-slide, animated pulse
+
+# 🎯  학습목표
+
+---
+# 학습목표
+
+1. 점의 이동
+   1. 평행 이동
+   1. 회전 이동
+   1. 회전후 평행 이동
+1. 좌표 변환
+   1. 평행 이동된 좌표계
+   1. 회전 이동된 좌표계
+   1. 회전후 평행 이동된 좌표계
+1. 좌표의 역변환
+1. 좌표 변환의 조합
+
+---
+class: inverse, center, middle, title-slide, animated pulse
+# 🌠 점의 이동 
+## Moving Points
+
+---
+# ① Translation (평행이동)
+
+.pull-up-2[
+.pull-left-45[
+![:scale 90%](figs/geometric-transformation-01-02.png)
+]
+
+.pull-right-55[
+.pull-down-8[
+- 2D
+`$$\begin{align}
+\begin{bmatrix}x' \\ y'\end{bmatrix}
+&amp;= 
+\begin{bmatrix}x \\ y\end{bmatrix}
++
+\color{blue}{\begin{bmatrix}t_x \\ t_y\end{bmatrix}}
+\end{align}$$`
+
+.pull-down-10[
+- n-D
+`$$\mathbf{p}' = \mathbf{p} + \color{blue}{\mathbf{t}}$$`
+]
+]
+]
+]
+
+---
+# ② Rotation (회전이동)
+
+.pull-up-2[
+.pull-left-45[
+![:scale 90%](figs/geometric-transformation-07.png)
+]
+]
+
+---
+# ② Rotation (회전이동)
+
+.pull-up-2[
+.pull-left-45[
+![:scale 90%](figs/geometric-transformation-08.png)
+]
+
+.pull-right-55[
+- 2D
+.font80[
+`$$\begin{cases}
+x = r\cos\phi\\
+y = r\sin\phi
+\end{cases}, \;\;\;\; \begin{cases}
+x' = r\cos(\theta+\phi)\\
+y' = r\sin(\theta+\phi)
+\end{cases}$$`
+`$$\begin{align}
+x' &amp;= r\cos(\theta+\phi) = r(\cos\theta\cos\phi-\sin\theta\sin\phi)\\
+   &amp;= x\cos\theta - y\sin\theta\\
+y' &amp;= r\sin(\theta+\phi)= r(\sin\theta\cos\phi+\cos\theta\sin\phi)\\
+   &amp;= x\sin\theta + y\cos\theta
+\end{align}$$`
+`$$\begin{align}
+\begin{bmatrix}x' \\ y'\end{bmatrix}
+&amp;= 
+\begin{bmatrix}x\cos\theta - y\sin\theta \\ x\sin\theta + y\cos\theta\end{bmatrix}
+=
+\left[\begin{array}{rr}\cos\theta &amp; -\sin\theta\\ \sin\theta &amp; \cos\theta\end{array}\right]
+\begin{bmatrix}x \\ y\end{bmatrix}
+\end{align}$$`
+]
+]
+]
+
+---
+# ② Rotation (회전이동)
+
+.pull-up-2[
+.pull-left-45[
+![:scale 90%](figs/geometric-transformation-07.png)
+]
+
+.pull-right-55[
+.pull-down-6[
+- 2D
+`$$\begin{align}
+\begin{bmatrix}x' \\ y'\end{bmatrix}
+&amp;=
+\color{red}{\left[\begin{array}{rr}\cos\theta &amp; -\sin\theta\\ \sin\theta &amp; \cos\theta\end{array}\right]}
+\begin{bmatrix}x \\ y\end{bmatrix}
+\end{align}$$`
+]
+
+.pull-down-10[
+- n-D
+`$$\mathbf{p}' = \color{red}{\mathbf{R}}\mathbf{p}$$`
+`$$\mathbf{R}\mathbf{R}^\top = \mathbf{R}^\top\mathbf{R} = \mathbf{I}, \; \text{det}(\mathbf{R}) = 1$$`
+]
+]
+]
+
+---
+# ② Rotation &amp;mdash; 기저변환(Change of Basis Vectors)
+
+.middle-20[![:scale 60%](figs/matrix-linear-transformation-21-01.png)]
+--
+.middle-20[![:scale 60%](figs/matrix-linear-transformation-21-02.png)]
+--
+.middle-20[![:scale 60%](figs/matrix-linear-transformation-21-03.png)]
+
+---
+# ② Rotation &amp;mdash; 기저변환(Change of Basis Vectors)
+
+.pull-up-2[
+.font90[
+- 회전행렬: 열관점 (Column-View)
+`$$\begin{align}
+\color{magenta}{\mathbf{R}} = \left[\begin{array}{rr}\color{red}{\cos\theta} &amp; \color{blue}{-\sin\theta}\\ \color{red}{\sin\theta} &amp; \color{blue}{\cos\theta}\end{array}\right] = \begin{bmatrix}\color{red}{|} &amp; \color{blue}{|}\\ \color{red}{\mathbf{e}_1'} &amp; \color{blue}{\mathbf{e}_1'}\\ \color{red}{|} &amp; \color{blue}{|}\end{bmatrix}
+\end{align}$$`
+- 회전행렬: 표준기저벡터를 열벡터로 변환하는 행렬
+`$$\begin{align}\color{magenta}{\mathbf{R}} &amp;= \color{magenta}{\mathbf{R}}\mathbf{I}\\
+\left[\begin{array}{rr}\color{red}{\cos\theta} &amp; \color{blue}{-\sin\theta}\\ \color{red}{\sin\theta} &amp; \color{blue}{\cos\theta}\end{array}\right] &amp;= \color{magenta}{\left[\begin{array}{rr}\cos\theta &amp; -\sin\theta\\ \sin\theta &amp; \cos\theta\end{array}\right]}\begin{bmatrix}\color{red}{1}&amp;\color{blue}{0}\\\color{red}{0}&amp;\color{blue}{1}\end{bmatrix}\\
+\begin{bmatrix}\color{red}{|} &amp; \color{blue}{|}\\ \color{red}{\mathbf{e}_1'} &amp; \color{blue}{\mathbf{e}_1'}\\ \color{red}{|} &amp; \color{blue}{|}\end{bmatrix} &amp; = \color{magenta}{\mathbf{R}}\begin{bmatrix}\color{red}{|} &amp; \color{blue}{|}\\ \color{red}{\mathbf{e}_1} &amp; \color{blue}{\mathbf{e}_1}\\ \color{red}{|} &amp; \color{blue}{|}\end{bmatrix}\end{align}$$`
+]
+]
+
+---
+# ② Rotation (회전이동)
+
+.pull-left[
+.pull-up-4[
+- Rotation
+`$$\begin{align}&amp;\begin{bmatrix}\color{red}{\frac{\sqrt{3}}{2}} &amp; \color{blue}{-\frac{1}{2}} \\ \color{red}{\frac{1}{2}} &amp; \color{blue}{\frac{\sqrt{3}}{2}}\end{bmatrix}\color{green}{\left[\begin{array}{rr}8\\3\end{array}\right]} = \color{black}{\left[\begin{array}{rr}\frac{-3+8\sqrt{3}}{2}\\\frac{8+3\sqrt{3}}{2}\end{array}\right]}\end{align}$$`
+]
+]
+
+.pull-right[
+.pull-up-6[
+.center[
+![:scale 100%](figs/geometric-transformation-50.png)
+]
+]
+]
+
+
+---
+# ② Rotation &amp;mdash; 기저변환(Change of Basis Vectors)
+
+.pull-left[
+.pull-up-4[
+- Change of Basis Vectors
+`$$\begin{align}&amp;\begin{bmatrix}\color{red}{\frac{\sqrt{3}}{2}} &amp; \color{blue}{-\frac{1}{2}} \\ \color{red}{\frac{1}{2}} &amp; \color{blue}{\frac{\sqrt{3}}{2}}\end{bmatrix}\color{green}{\left[\begin{array}{rr}8\\3\end{array}\right]} = \color{black}{\left[\begin{array}{rr}\frac{-3+8\sqrt{3}}{2}\\\frac{8+3\sqrt{3}}{2}\end{array}\right]}\\
+&amp;= \begin{bmatrix}\color{red}{\frac{\sqrt{3}}{2}} &amp; \color{blue}{-\frac{1}{2}} \\ \color{red}{\frac{1}{2}} &amp; \color{blue}{\frac{\sqrt{3}}{2}}\end{bmatrix}\left(\color{green}{8}\color{red}{\begin{bmatrix}1\\0\end{bmatrix}} + \color{green}{3}\color{blue}{\begin{bmatrix}0\\1\end{bmatrix}}\right)\end{align}$$`
+]
+]
+
+.pull-right[
+.pull-up-6[
+.center[
+![:scale 100%](figs/geometric-transformation-46.png)
+]
+]
+]
+
+---
+# ② Rotation &amp;mdash; 기저변환(Change of Basis Vectors)
+
+.pull-left[
+.pull-up-4[
+- Change of Basis Vectors
+`$$\begin{align}&amp;\begin{bmatrix}\color{red}{\frac{\sqrt{3}}{2}} &amp; \color{blue}{-\frac{1}{2}} \\ \color{red}{\frac{1}{2}} &amp; \color{blue}{\frac{\sqrt{3}}{2}}\end{bmatrix}\color{green}{\left[\begin{array}{rr}8\\3\end{array}\right]} = \color{black}{\left[\begin{array}{rr}\frac{-3+8\sqrt{3}}{2}\\\frac{8+3\sqrt{3}}{2}\end{array}\right]}\\
+&amp;= \begin{bmatrix}\color{red}{\frac{\sqrt{3}}{2}} &amp; \color{blue}{-\frac{1}{2}} \\ \color{red}{\frac{1}{2}} &amp; \color{blue}{\frac{\sqrt{3}}{2}}\end{bmatrix}\left(\color{green}{8}\color{red}{\begin{bmatrix}1\\0\end{bmatrix}} + \color{green}{3}\color{blue}{\begin{bmatrix}0\\1\end{bmatrix}}\right)\\
+&amp;= \color{green}{8}\color{red}{\begin{bmatrix}\frac{\sqrt{3}}{2}\\\frac{1}{2}\end{bmatrix}} + \color{green}{3}\color{blue}{\begin{bmatrix}-\frac{1}{2}\\\frac{\sqrt{3}}{2}\end{bmatrix}}\end{align}$$`
+]
+]
+
+.pull-right[
+.pull-up-6[
+.center[
+![:scale 100%](figs/geometric-transformation-47.png)
+]
+]
+]
+
+---
+# ② Rotation &amp;mdash; 기저변환(Change of Basis Vectors)
+
+.pull-left[
+.pull-up-4[
+- Change of Basis Vectors
+`$$\begin{align}&amp;\begin{bmatrix}\color{red}{\frac{\sqrt{3}}{2}} &amp; \color{blue}{-\frac{1}{2}} \\ \color{red}{\frac{1}{2}} &amp; \color{blue}{\frac{\sqrt{3}}{2}}\end{bmatrix}\color{green}{\left[\begin{array}{rr}8\\3\end{array}\right]} = \color{black}{\left[\begin{array}{rr}\frac{-3+8\sqrt{3}}{2}\\\frac{8+3\sqrt{3}}{2}\end{array}\right]}\\
+&amp;= \begin{bmatrix}\color{red}{\frac{\sqrt{3}}{2}} &amp; \color{blue}{-\frac{1}{2}} \\ \color{red}{\frac{1}{2}} &amp; \color{blue}{\frac{\sqrt{3}}{2}}\end{bmatrix}\left(\color{green}{8}\color{red}{\begin{bmatrix}1\\0\end{bmatrix}} + \color{green}{3}\color{blue}{\begin{bmatrix}0\\1\end{bmatrix}}\right)\\
+&amp;= \color{green}{8}\color{red}{\begin{bmatrix}\frac{\sqrt{3}}{2}\\\frac{1}{2}\end{bmatrix}} + \color{green}{3}\color{blue}{\begin{bmatrix}-\frac{1}{2}\\\frac{\sqrt{3}}{2}\end{bmatrix}}\end{align}$$`
+]
+]
+
+.pull-right[
+.pull-up-6[
+.center[
+![:scale 100%](figs/geometric-transformation-48-02.png)
+]
+]
+]
+
+---
+# ② Rotation &amp;mdash; 기저변환(Change of Basis Vectors)
+
+.pull-left[
+.pull-up-4[
+- Change of Basis Vectors
+`$$\begin{align}&amp;\begin{bmatrix}\color{red}{\frac{\sqrt{3}}{2}} &amp; \color{blue}{-\frac{1}{2}} \\ \color{red}{\frac{1}{2}} &amp; \color{blue}{\frac{\sqrt{3}}{2}}\end{bmatrix}\color{green}{\left[\begin{array}{rr}8\\3\end{array}\right]} = \color{black}{\left[\begin{array}{rr}\frac{-3+8\sqrt{3}}{2}\\\frac{8+3\sqrt{3}}{2}\end{array}\right]}\\
+&amp;= \begin{bmatrix}\color{red}{\frac{\sqrt{3}}{2}} &amp; \color{blue}{-\frac{1}{2}} \\ \color{red}{\frac{1}{2}} &amp; \color{blue}{\frac{\sqrt{3}}{2}}\end{bmatrix}\left(\color{green}{8}\color{red}{\begin{bmatrix}1\\0\end{bmatrix}} + \color{green}{3}\color{blue}{\begin{bmatrix}0\\1\end{bmatrix}}\right)\\
+&amp;= \color{green}{8}\color{red}{\begin{bmatrix}\frac{\sqrt{3}}{2}\\\frac{1}{2}\end{bmatrix}} + \color{green}{3}\color{blue}{\begin{bmatrix}-\frac{1}{2}\\\frac{\sqrt{3}}{2}\end{bmatrix}}\end{align}$$`
+]
+]
+
+.pull-right[
+.pull-up-6[
+.center[
+![:scale 100%](figs/geometric-transformation-49-02.png)
+]
+]
+]
+
+---
+# ③ Rotation + Translation (회전후 평행이동)
+
+.pull-up-2[
+.pull-left-45[
+![:scale 90%](figs/geometric-transformation-51.png)
+]
+
+.pull-right-55[
+.pull-down-6[
+- 2D
+`$$\begin{align}
+\begin{bmatrix}x' \\ y'\end{bmatrix}
+&amp;=
+\color{red}{\left[\begin{array}{rr}\cos\theta &amp; -\sin\theta\\ \sin\theta &amp; \cos\theta\end{array}\right]}
+\begin{bmatrix}x \\ y\end{bmatrix} + \color{blue}{\begin{bmatrix}t_x \\ t_y\end{bmatrix}}
+\end{align}$$`
+]
+
+.pull-down-10[
+- n-D
+`$$\mathbf{p}' = \color{red}{\mathbf{R}}\mathbf{p} + \color{blue}{\mathbf{t}}$$`
+`$$\mathbf{R}\mathbf{R}^\top = \mathbf{R}^\top\mathbf{R} = \mathbf{I}, \; \text{det}(\mathbf{R}) = 1$$`
+]
+]
+]
+
+---
+class: inverse, center, middle, title-slide, animated pulse
+# ♻️ 좌표 변환 &amp;mdash; ① 평행이동
+## Coordintate Transformations
+
+
+---
+# ① 평행이동
+
+.pull-up-5[
+.pull-left-50[
+- Global/Body Coordinates (🧑👩)
+
+.pull-up-0[
+.center[
+![:scale 70%](figs/transformation-04-00.png)
+]
+]
+]
+
+]
+
+.middle-78[
+.font120[
+배(Body 좌표계)가 항구(Global 좌표계)에 정박(일치)해 있었다.&lt;br&gt;
+항구에는 🧑가 서 있고, 배에는 👩가 타고 있다.
+]
+]
+
+---
+background-image: url("figs/transformation-right-arrow.png")
+background-position: 50% 55%
+background-size: 7%
+
+# ① 평행이동
+
+.pull-up-5[
+.pull-left-50[
+- Global Coordinates (🧑)
+
+.pull-up-0[
+.center[
+![:scale 70%](figs/transformation-04-01.png)
+]
+]
+]
+
+.pull-left-50[
+- Body Coordinates (👩)
+
+.pull-up-0[
+.center[
+![:scale 70%](figs/transformation-07-01-02.png)
+]
+]
+]
+]
+
+.middle-80[
+.font120[
+배(Body 좌표계)가 항구(Global 좌표계)로부터 `\((1,1)\)`만큼 평행이동하였다.
+]
+]
+
+---
+background-image: url("figs/transformation-right-arrow.png")
+background-position: 50% 55%
+background-size: 7%
+
+# ① 평행이동
+
+.pull-up-5[
+.pull-left-50[
+- Global Coordinates (🧑)
+
+.pull-up-0[
+.center[
+![:scale 70%](figs/transformation-04-01.png)
+]
+]
+]
+
+.pull-left-50[
+- Body Coordinates (👩)
+
+.pull-up-0[
+.center[
+![:scale 70%](figs/transformation-07-06-03-02.png)
+]
+]
+]
+]
+
+.middle-80[
+.font120[
+배 위에서 👩가 Body 좌표계의 좌표 `\((1,2)\)`에서 등대 `\(\mathbf{p}\)`를 발견했다.
+]
+]
+
+
+---
+background-image: url("figs/transformation-left-arrow.png")
+background-position: 50% 55%
+background-size: 7%
+
+# ① 평행이동
+
+.pull-up-5[
+.pull-left-50[
+- Global Coordinates (🧑)
+
+.pull-up-0[
+.center[
+![:scale 70%](figs/transformation-04-03-07-01.png)
+]
+]
+]
+
+.pull-left-50[
+- Body Coordinates (👩)
+
+.pull-up-0[
+.center[
+![:scale 70%](figs/transformation-07-06-03-02.png)
+]
+]
+]
+]
+
+.middle-80[
+.font120[
+항구 에서 🧑가 Global 좌표계로 볼때 등대 `\(\mathbf{p}\)`의 좌표는 어떻게 될까?
+]
+]
+
+
+---
+background-image: url("figs/transformation-left-arrow.png")
+background-position: 50% 55%
+background-size: 7%
+
+# ① 평행이동
+
+.pull-up-5[
+.pull-left-50[
+- Global Coordinates (🧑)
+
+.pull-up-0[
+.center[
+![:scale 70%](figs/transformation-04-03-05.png)
+]
+]
+]
+
+.pull-left-50[
+- Body Coordinates (👩)
+
+.pull-up-0[
+.center[
+![:scale 70%](figs/transformation-07-06-04-02.png)
+]
+]
+]
+
+]
+
+.middle-77[
+.font120[
+`$$\color{magenta}{\begin{bmatrix}2 \\ 3\end{bmatrix}}=\color{green}{\begin{bmatrix}1 \\ 2\end{bmatrix}}+\color{orange}{\begin{bmatrix}1 \\ 1\end{bmatrix}}$$`
+]
+]
+
+---
+background-image: url("figs/transformation-left-arrow.png")
+background-position: 50% 55%
+background-size: 7%
+
+# ① 평행이동
+
+.pull-up-5[
+.pull-left-50[
+- Global Coordinates (🧑)
+
+.pull-up-0[
+.center[
+![:scale 70%](figs/transformation-04-03-05.png)
+]
+]
+]
+
+.pull-left-50[
+- Body Coordinates (👩)
+
+.pull-up-0[
+.center[
+![:scale 70%](figs/transformation-07-06-04-02.png)
+]
+]
+]
+]
+
+.middle-77[
+.font130[
+`$$\color{magenta}{^G\mathbf{p}}=\color{green}{^B\mathbf{p}}+\color{orange}{^G\mathbf{t}_B}$$`
+]
+]
+
+.middle-84[
+.center[
+.font120[
+`\(^G\mathbf{t}_B\)`: Global 좌표계에서 바라본 Body 좌표계의 위치/평행이동
+]
+]
+]
+
+---
+background-image: url("figs/transformation-left-arrow.png")
+background-position: 50% 55%
+background-size: 7%
+
+# ① 평행이동
+
+.pull-up-5[
+.pull-left-50[
+- Global Coordinates (🧑)
+
+.pull-up-0[
+.center[
+![:scale 70%](figs/transformation-04-03-05.png)
+]
+]
+]
+
+.pull-left-50[
+- Body Coordinates (👩)
+
+.pull-up-0[
+.center[
+![:scale 70%](figs/transformation-07-06-03-02.png)
+]
+]
+]
+]
+
+.middle-79[
+.font120[
+등대 `\(\mathbf{p}\)`는 배(Body 좌표계)에서 👩가 바라보면 `\(^B\mathbf{p}=(1,2)\)`에 있지만,&lt;br&gt;
+항구(Global 좌표계)에서 🧑가 바라보면 다른 좌표인 `\(^G\mathbf{p}=(2,3)\)`에 있다.
+]
+]
+
+---
+class: inverse, center, middle, title-slide, animated pulse
+# ♻️ 좌표 변환 &amp;mdash; ② 회전이동
+## Coordintate Transformations
+
+---
+# ② 회전이동
+
+.pull-up-5[
+.pull-left-50[
+- Global/Body Coordinates (🧑👩)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-04-00-02.png)
+]
+]
+]
+]
+
+
+.middle-75[
+.font120[
+배(Body 좌표계)가 항구(Global 좌표계)에 정박(일치)해 있었다.&lt;br&gt;
+항구에는 🧑가 서 있고, 배에는 👩가 타고 있다.
+]
+]
+
+---
+background-image: url("figs/transformation-right-arrow.png")
+background-position: 50% 55%
+background-size: 7%
+
+# ② 회전이동
+
+.pull-up-5[
+.pull-left-50[
+- Global Coordinates (🧑)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-04-03-06.png)
+]
+]
+]
+
+.pull-left-50[
+- Body Coordinates (👩)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-09-00.png)
+]
+]
+]
+]
+
+.middle-75[
+.font120[
+배(Body 좌표계)가 항구(Global 좌표계)로부터 `\(\theta\)`만큼 회전이동하였다. ( `\(\tan\theta = \frac{5}{12}\)` )
+]
+]
+
+---
+background-image: url("figs/transformation-right-arrow.png")
+background-position: 50% 55%
+background-size: 7%
+
+# ② 회전이동
+
+.pull-up-5[
+.pull-left-50[
+- Global Coordinates (🧑)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-04-03-06.png)
+]
+]
+]
+
+.pull-left-50[
+- Body Coordinates (👩)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-09-05.png)
+]
+]
+]
+]
+
+.middle-75[
+.font120[
+배 위에서 👩가 Body 좌표계의 좌표 `\((3,2)\)`에서 등대 `\(\mathbf{p}\)`를 발견했다.
+]
+]
+
+---
+background-image: url("figs/transformation-left-arrow.png")
+background-position: 50% 55%
+background-size: 7%
+
+# ② 회전이동
+
+.pull-up-5[
+.pull-left-50[
+- Global Coordinates (🧑)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-04-03-07.png)
+]
+]
+]
+
+.pull-left-50[
+- Body Coordinates (👩)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-09-05.png)
+]
+]
+]
+]
+
+.middle-75[
+.font120[
+항구 에서 🧑가 Global 좌표계로 볼때 등대 `\(\mathbf{p}\)`의 좌표는 어떻게 될까?
+]
+]
+
+
+---
+background-image: url("figs/transformation-left-arrow.png")
+background-position: 50% 55%
+background-size: 7%
+
+# ② 회전이동
+
+.pull-up-5[
+.pull-left-50[
+- Global Coordinates (🧑)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-04-03-07.png)
+]
+]
+]
+
+.pull-left-50[
+- Body Coordinates (👩)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-09-06-02.png)
+]
+]
+]
+]
+
+.middle-75[
+.font120[
+배(Body 좌표계)와 등대를 항구(Global 좌표계)와 방향이 같도록 `\(-\theta\)`만큼 회전시켜보자.
+]
+]
+
+---
+background-image: url("figs/transformation-left-arrow.png")
+background-position: 50% 55%
+background-size: 7%
+
+# ② 회전이동
+
+.pull-up-5[
+.pull-left-50[
+- Global Coordinates (🧑)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-04-03-07.png)
+]
+]
+]
+
+.pull-left-50[
+- Body Coordinates (👩)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-09-04-02.png)
+]
+]
+]
+]
+
+.top-75[
+.font120[
+항구(Global 좌표계)에서 🧑가 바라보는 등대 점 `\(^G\mathbf{p}\)`는&lt;br&gt; 
+배(Body 좌표계)에서 👩가 바라보는 점 `\(^B\mathbf{p}\)`를 원점을 중심으로 `\(\theta\)`만큼 회전시킨 것과 같다.
+]
+]
+
+
+---
+background-image: url("figs/transformation-left-arrow.png")
+background-position: 50% 55%
+background-size: 7%
+
+# ② 회전이동
+
+.pull-up-5[
+.pull-left-50[
+- Global Coordinates (🧑)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-04-03-07.png)
+]
+]
+]
+
+.pull-left-50[
+- Body Coordinates (👩)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-09-04-02.png)
+]
+]
+]
+]
+
+.middle-73[
+.font130[
+`$$\begin{align}\color{magenta}{^G\mathbf{p}}&amp;=\color{orange}{\left[\begin{array}{rr}\cos\theta &amp; -\sin\theta \\ \sin\theta &amp; \cos\theta\end{array}\right]}\color{green}{^B\mathbf{p}}\end{align}$$`
+]
+]
+
+---
+background-image: url("figs/transformation-left-arrow.png")
+background-position: 50% 55%
+background-size: 7%
+
+# ② 회전이동
+
+.pull-up-5[
+.pull-left-50[
+- Global Coordinates (🧑)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-04-06-02.png)
+]
+]
+]
+
+.pull-left-50[
+- Body Coordinates (👩)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-09-04-03.png)
+]
+]
+]
+]
+
+.middle-72[
+.font130[
+`$$\color{magenta}{\begin{bmatrix}2 \\ 3\end{bmatrix}}=\color{orange}{\begin{bmatrix}\frac{12}{13} &amp; \frac{-5}{13} \\ \frac{5}{13} &amp; \frac{12}{13}\end{bmatrix}}\color{green}{\begin{bmatrix}3 \\ 2\end{bmatrix}}$$`
+]
+]
+
+---
+background-image: url("figs/transformation-left-arrow.png")
+background-position: 50% 55%
+background-size: 7%
+
+# ② 회전이동
+
+.pull-up-5[
+.pull-left-50[
+- Global Coordinates (🧑)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-04-06-02.png)
+]
+]
+]
+
+.pull-left-50[
+- Body Coordinates (👩)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-09-05.png)
+]
+]
+]
+]
+
+.middle-75[
+.font120[
+등대 `\(\mathbf{p}\)`는 배(Body 좌표계)에서 👩가 바라보면 `\(^B\mathbf{p}=(3,2)\)`에 있지만,&lt;br&gt;
+항구(Global 좌표계)에서 🧑가 바라보면 다른 좌표인 `\(^G\mathbf{p}=(2,3)\)`에 있다.
+]
+]
+
+---
+background-image: url("figs/transformation-left-arrow.png")
+background-position: 50% 55%
+background-size: 7%
+
+# ② 회전이동: 기저변환
+
+.pull-up-5[
+.pull-left-50[
+- Global Coordinates (🧑)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-04-06-02.png)
+]
+]
+]
+
+.pull-left-50[
+- Body Coordinates (👩)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-09-07.png)
+]
+]
+]
+]
+
+.middle-72[
+.font110[
+`$$\begin{align}\color{magenta}{^G\mathbf{p}}&amp;=\color{orange}{\left[\begin{array}{rr}\color{red}{\cos\theta} &amp; \color{blue}{-\sin\theta} \\ \color{red}{\sin\theta} &amp; \color{blue}{\cos\theta}\end{array}\right]}\color{green}{^B\mathbf{p}} , \;\;\;\color{magenta}{^G\mathbf{p}}=\color{orange}{^G\mathbf{R}_B}\color{green}{^B\mathbf{p}}\end{align}$$`
+]
+]
+
+.middle-83[
+.center[
+.font120[
+회전행렬 `\(^G\mathbf{R}_B\)`의 열벡터는 Body 좌표계의 기저벡터를 Global 좌표계로 표현한 것이다.
+]
+]
+]
+
+---
+class: inverse, center, middle, title-slide, animated pulse
+# ♻️ 좌표 변환 &amp;mdash; ③ 회전후 평행이동
+## Coordintate Transformations
+
+---
+# ③ 회전후 평행이동
+
+.pull-up-5[
+.pull-left-50[
+- Global/Body Coordinates (🧑👩)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-04-00-03.png)
+]
+]
+]
+]
+
+
+.middle-75[
+.font120[
+배(Body 좌표계)가 항구(Global 좌표계)에 정박(일치)해 있었다.&lt;br&gt;
+항구에는 🧑가 서 있고, 배에는 👩가 타고 있다.
+]
+]
+
+---
+background-image: url("figs/transformation-right-arrow.png")
+background-position: 50% 55%
+background-size: 7%
+
+# ③ 회전후 평행이동
+
+.pull-up-5[
+.pull-left-50[
+- Global Coordinates (🧑)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-04-08.png)
+]
+]
+]
+
+.pull-left-50[
+- Body Coordinates (👩)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-09-08.png)
+]
+]
+]
+]
+
+.top-75[
+.font120[
+배(Body 좌표계)가 항구(Global 좌표계)에서 `\(\theta\)`만큼 회전이동한 뒤 ( `\(\tan\theta = \frac{5}{12}\)` )
+]
+]
+
+---
+background-image: url("figs/transformation-right-arrow.png")
+background-position: 50% 55%
+background-size: 7%
+
+# ③ 회전후 평행이동
+
+.pull-up-5[
+.pull-left-50[
+- Global Coordinates (🧑)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-04-08.png)
+]
+]
+]
+
+.pull-left-50[
+- Body Coordinates (👩)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-09-09-02.png)
+]
+]
+]
+]
+
+.top-75[
+.font120[
+배(Body 좌표계)가 항구(Global 좌표계)에서 `\(\theta\)`만큼 회전이동한 뒤 `\((\frac{12}{13}, \frac{5}{13})\)`만큼 평행이동하였다.
+]
+]
+
+---
+background-image: url("figs/transformation-left-arrow.png")
+background-position: 50% 55%
+background-size: 7%
+
+# ③ 회전후 평행이동
+
+.pull-up-5[
+.pull-left-50[
+- Global Coordinates (🧑)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-04-08.png)
+]
+]
+]
+
+.pull-left-50[
+- Body Coordinates (👩)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-09-10-07.png)
+]
+]
+]
+]
+
+.middle-75[
+.font120[
+배 위에서 👩가 Body 좌표계의 좌표 `\((2,2)\)`에서 등대 `\(\mathbf{p}\)`를 발견했다.
+]
+]
+
+---
+background-image: url("figs/transformation-left-arrow.png")
+background-position: 50% 55%
+background-size: 7%
+
+# ③ 회전후 평행이동
+
+.pull-up-5[
+.pull-left-50[
+- Global Coordinates (🧑)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-04-09.png)
+]
+]
+]
+
+.pull-left-50[
+- Body Coordinates (👩)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-09-10-07.png)
+]
+]
+]
+]
+
+.middle-75[
+.font120[
+항구 에서 🧑가 Global 좌표계로 볼때 등대 `\(\mathbf{p}\)`의 좌표는 어떻게 될까?
+]
+]
+
+---
+background-image: url("figs/transformation-left-arrow.png")
+background-position: 50% 55%
+background-size: 7%
+
+# ③ 회전후 평행이동
+
+.pull-up-5[
+.pull-left-50[
+- Global Coordinates (🧑 Gilbert)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-04-09.png)
+]
+]
+]
+
+.pull-left-50[
+- Body Coordinates (👩 Betty)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-09-10-03-02.png)
+]
+]
+]
+]
+
+
+.middle-75[
+.font120[
+먼저 배(Body 좌표)를 항구(Global 좌표)와 방향이 같도록 `\(-\theta\)`만큼 회전시켜보자.
+]
+]
+
+---
+background-image: url("figs/transformation-left-arrow.png")
+background-position: 50% 55%
+background-size: 7%
+
+# ③ 회전후 평행이동
+
+.pull-up-5[
+.pull-left-50[
+- Global Coordinates (🧑 Gilbert)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-04-09.png)
+]
+]
+]
+
+.pull-left-50[
+- Body Coordinates (👩 Betty)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-09-10-04-02.png)
+]
+]
+]
+]
+
+.middle-70[
+.font110[
+`$$\begin{align}\color{magenta}{^{G'}\mathbf{p}}&amp;=\color{orange}{\left[\begin{array}{rr}\cos\theta &amp; -\sin\theta \\ \sin\theta &amp; \cos\theta\end{array}\right]}\color{green}{^B\mathbf{p}}\end{align}$$`
+]
+]
+
+.top-80[
+.font120[
+평행이동된 항구(Global' 좌표계)에서 등대 점 `\(^{G'}\mathbf{p}\)`는&lt;br&gt; 
+배(Body 좌표계)에서 👩가 바라보는 점 `\(^B\mathbf{p}\)`를 원점을 중심으로 `\(\theta\)`만큼 회전시킨 것과 같다.
+]
+]
+
+---
+background-image: url("figs/transformation-left-arrow.png")
+background-position: 50% 55%
+background-size: 7%
+
+# ③ 회전후 평행이동
+
+.pull-up-5[
+.pull-left-50[
+- Global Coordinates (🧑 Gilbert)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-04-09.png)
+]
+]
+]
+
+.pull-left-50[
+- Body Coordinates (👩 Betty)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-09-10-05-02.png)
+]
+]
+]
+]
+
+.middle-70[
+.font110[
+`$$\begin{align}\color{magenta}{^{G'}\mathbf{p}}&amp;=\color{orange}{\left[\begin{array}{rr}\cos\theta &amp; -\sin\theta \\ \sin\theta &amp; \cos\theta\end{array}\right]}\color{green}{^B\mathbf{p}}\end{align}$$`
+]
+]
+
+.top-82[
+.font120[
+이는 곧 항구(Global 좌표계에서) 평행이동한 배(Global' 좌표계)에서 바라본 등대 점 `\(^{G'}\mathbf{p}\)`라고 생각할 수 있다.
+]
+]
+
+---
+background-image: url("figs/transformation-left-arrow.png")
+background-position: 50% 55%
+background-size: 7%
+
+# ③ 회전후 평행이동
+
+.pull-up-5[
+.pull-left-50[
+- Global Coordinates (🧑 Gilbert)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-04-09.png)
+]
+]
+]
+
+.pull-left-50[
+- Body Coordinates (👩 Betty)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-09-10-06-02.png)
+]
+]
+]
+]
+
+.middle-70[
+.font110[
+`$$\begin{align}\color{magenta}{^{G}\mathbf{p}}&amp;=\color{orange}{\left[\begin{array}{rr}\cos\theta &amp; -\sin\theta \\ \sin\theta &amp; \cos\theta\end{array}\right]}\color{green}{^B\mathbf{p}} + \color{orange}{\mathbf{t}}\end{align}$$`
+]
+]
+
+.middle-82[
+.font120[
+따라서 항구 에서 🧑가 Global 좌표계로 볼때 등대 `\(\mathbf{p}\)`의 좌표는 평행이동만큼 더해주면 된다.
+]
+]
+
+---
+background-image: url("figs/transformation-left-arrow.png")
+background-position: 50% 55%
+background-size: 7%
+
+# ③ 회전후 평행이동
+
+.pull-up-5[
+.pull-left-50[
+- Global Coordinates (🧑 Gilbert)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-04-10.png)
+]
+]
+]
+
+.pull-left-50[
+- Body Coordinates (👩 Betty)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-09-10-07.png)
+]
+]
+]
+]
+
+.middle-71[
+.font110[
+`$$\begin{align} \color{magenta}{\begin{bmatrix}2 \\ 3\end{bmatrix}}=\color{red}{\begin{bmatrix}\frac{12}{13} &amp; \frac{-5}{13} \\ \frac{5}{13} &amp; \frac{12}{13}\end{bmatrix}}\color{green}{\begin{bmatrix}2 \\ 2\end{bmatrix}}+\color{blue}{\begin{bmatrix}\frac{12}{13} \\ \frac{5}{13}\end{bmatrix}}\end{align}$$`
+]
+]
+
+.middle-85[
+.font120[
+등대 `\(\mathbf{p}\)`는 배(Body 좌표계)에서 바라보면 `\(^B\mathbf{p}=(2,2)\)`에, 항구(Global 좌표계)에서 바라보면 `\(^G\mathbf{p}=(2,3)\)`에 있다.
+]
+]
+
+---
+background-image: url("figs/transformation-left-arrow.png")
+background-position: 50% 55%
+background-size: 7%
+
+# ③ 회전후 평행이동
+
+.pull-up-5[
+.pull-left-50[
+- Global Coordinates (🧑 Gilbert)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-04-10.png)
+]
+]
+]
+
+.pull-left-50[
+- Body Coordinates (👩 Betty)
+
+.pull-down-2[
+.center[
+![:scale 75%](figs/transformation-09-10-07.png)
+]
+]
+]
+]
+
+.middle-73[
+.font130[
+`$$\begin{align}\color{magenta}{^{G}\mathbf{p}}&amp;=\color{red}{^G\mathbf{R}_B}\color{green}{^B\mathbf{p}}+\color{blue}{^G\mathbf{t}_B}\end{align}$$`
+]
+]
+
+.middle-82[
+.font120[
+`\(\color{red}{^G\mathbf{R}_B}, \color{blue}{^G\mathbf{t}_B}\)`: Global 좌표계(항구, 🧑 Gilbert)에서 바라본 Body 좌표계(배, 👩 Betty)의 방향/위치
+]
+]
+
+---
+background-image: url("figs/transformation-left-arrow.png")
+background-position: 50% 55%
+background-size: 7%
+
+# 회전이동후 평행이동 `\(\neq\)` 평행이동후 회전이동
+
+.pull-down-2[
+.center[
+![:scale 90%](figs/order.gif)
+]
+]
+
+.footer-right[https://medium.com/swlh/the-heart-of-react-native-transform-e0f4995ebdb6]
+
+
+
+---
+class: inverse, center, middle, title-slide, animated pulse
+# 👓 세개의 관점
+## Three Views
+
+---
+# 점의 이동 = 좌표 변환 = 물체의 자세
+
+.pull-up-2[
+1. 점의 이동: 한 점을 다른 점으로 회전한 뒤 평행이동시킨다.
+`$$\begin{align}\begin{bmatrix}x'\\y'\end{bmatrix} &amp;= \left[\begin{array}{rr}\cos\theta &amp; -\sin\theta\\ \sin\theta &amp; \cos\theta\end{array}\right]\begin{bmatrix}x\\y\end{bmatrix} + \begin{bmatrix}t_x\\t_y\end{bmatrix}\\\mathbf{p}'&amp;=\color{red}{\mathbf{R}}\mathbf{p} + \color{blue}{\mathbf{t}}\end{align}$$`
+2. 좌표변환: 회전한 뒤 평행이동한 좌표계에서 기준 좌표계로 바꾼다.
+`$$\begin{align}\begin{bmatrix}^Gx\\^Gy\end{bmatrix} &amp;= \left[\begin{array}{rr}\cos\theta &amp; -\sin\theta\\ \sin\theta &amp; \cos\theta\end{array}\right]\begin{bmatrix}^Bx\\^By\end{bmatrix} + \begin{bmatrix}t_x\\t_y\end{bmatrix}\\^G\mathbf{p}&amp;=\color{red}{^{G}\mathbf{R}_B}^B\mathbf{p} + \color{blue}{^{G}\mathbf{t}_B}\end{align}$$`
+3. 물체의 자세: 방향(회전이동) `\(\color{red}{^{G}\mathbf{R}_B}\)`, 위치(평행이동) `\(\color{blue}{^{G}\mathbf{t}_B}\)`
+]
+
+---
+# 동차 좌표계 (Homogeneous Coordinates)
+
+- 0이 아닌 마지막 좌표로 나누어도 같은 좌표: 투영 공간 (Projective Space)
+`$$\tilde{\mathbf{x}} = \begin{bmatrix}x \\ y \\ \color{red}{w}\end{bmatrix} \sim \begin{bmatrix}\frac{x}{\color{red}{w}} \\ \frac{y}{\color{red}{w}} \\ \color{blue}{1}\end{bmatrix} \in \mathbb{P}^2, \color{red}{w} \neq 0$$`
+
+
+
+- 직각 좌표계 &amp;hArr; 동차 좌표계
+`$$\mathbf{x} = \begin{bmatrix}x \\ y\end{bmatrix} \in \mathbb{R}^2 \;\Leftrightarrow\; \tilde{\mathbf{x}} = \begin{bmatrix}x \\ y \\ \color{blue}{1}\end{bmatrix} \in \mathbb{P}^2$$`
+
+
+
+---
+# 좌표변환 행렬 (Transformation Matrix)
+
+.pull-up-3[
+.font85[
+.pull-left[
+1. 점의 이동
+`$$\begin{align}\begin{bmatrix}x'\\y'\end{bmatrix} &amp;= \left[\begin{array}{rr}\cos\theta &amp; -\sin\theta\\ \sin\theta &amp; \cos\theta\end{array}\right]\begin{bmatrix}x\\y\end{bmatrix} + \begin{bmatrix}t_x\\t_y\end{bmatrix}\\\mathbf{p}'&amp;=\color{red}{\mathbf{R}}\mathbf{p} + \color{blue}{\mathbf{t}}\end{align}$$`
+1. 좌표변환
+`$$\begin{align}\begin{bmatrix}x'\\y'\end{bmatrix} &amp;= \left[\begin{array}{rr}\cos\theta &amp; -\sin\theta\\ \sin\theta &amp; \cos\theta\end{array}\right]\begin{bmatrix}x\\y\end{bmatrix} + \begin{bmatrix}t_x\\t_y\end{bmatrix}\\^G\mathbf{p}&amp;=\color{red}{^{G}\mathbf{R}_B}^B\mathbf{p} + \color{blue}{^{G}\mathbf{t}_B}\end{align}$$`
+1. 물체의 자세: `\(\color{red}{^{G}\mathbf{R}_B}\)`,  `\(\color{blue}{^{G}\mathbf{t}_B}\)`
+]
+
+.pull-right[
+1. 점의 이동
+`$$\begin{align}\begin{bmatrix}x'\\y'\\1\end{bmatrix} &amp;= \left[\begin{array}{rr|r}\cos\theta &amp; -\sin\theta &amp; t_x\\ \sin\theta &amp; \cos\theta &amp; t_y \\\hline 0 &amp; 0 &amp; 1\end{array}\right]\begin{bmatrix}x\\y\\1\end{bmatrix}\\\tilde{\mathbf{p}}'&amp;=\color{magenta}{\mathbf{T}}\tilde{\mathbf{p}}\end{align}$$`
+1. 좌표변환
+`$$\begin{align}\begin{bmatrix}x'\\y'\\1\end{bmatrix} &amp;= \left[\begin{array}{rr|r}\cos\theta &amp; -\sin\theta &amp; t_x\\ \sin\theta &amp; \cos\theta &amp; t_y \\\hline 0 &amp; 0 &amp; 1\end{array}\right]\begin{bmatrix}x\\y\\1\end{bmatrix}\\^G\tilde{\mathbf{p}}&amp;=\color{magenta}{^{G}\mathbf{T}_B}^B\tilde{\mathbf{p}}\end{align}$$`
+1. 물체의 자세: `\(\color{magenta}{^{G}\mathbf{T}_B}\)`
+]
+]
+]
+
+
+---
+# 좌표변환 행렬 (Transformation Matrix)
+
+.pull-up-2[
+.font85[
+.pull-left[
+- 2차원 공간에서 좌표변환 행렬
+`$$\begin{align}\begin{bmatrix}x'\\y'\\1\end{bmatrix} &amp;= \left[\begin{array}{r|r}\color{red}{^{G}\mathbf{R}_B} &amp; \color{blue}{^{G}\mathbf{t}_B}\\\hline \mathbf{0}^\top &amp; 1\end{array}\right]\begin{bmatrix}x\\y\\1\end{bmatrix}\\^G\tilde{\mathbf{p}}&amp;=\color{magenta}{^{G}\mathbf{T}_B}^B\tilde{\mathbf{p}}\end{align}$$`
+- 차원
+`$$\begin{align}&amp;^G\tilde{\mathbf{p}}, ^B\tilde{\mathbf{p}} \in \mathbb{P}^2\\&amp;\color{red}{^{G}\mathbf{R}_B} \in \mathbb{R}^{2\times 2}\\&amp; \color{blue}{^{G}\mathbf{t}_B} \in \mathbb{R}^2\\ &amp;\color{magenta}{^{G}\mathbf{T}_B}\in \mathbb{R}^{3 \times 3}\end{align}$$`
+]
+
+.pull-right[
+- 3차원 공간에서 좌표변환 행렬
+`$$\begin{align}\begin{bmatrix}x'\\y'\\z'\\1\end{bmatrix} &amp;= \left[\begin{array}{r|r}\color{red}{^{G}\mathbf{R}_B} &amp; \color{blue}{^{G}\mathbf{t}_B}\\\hline \mathbf{0}^\top &amp; 1\end{array}\right]\begin{bmatrix}x\\y\\z\\1\end{bmatrix}\\^G\tilde{\mathbf{p}}&amp;=\color{magenta}{^{G}\mathbf{T}_B}^B\tilde{\mathbf{p}}\end{align}$$`
+- 차원
+`$$\begin{align}&amp;^G\tilde{\mathbf{p}}, ^B\tilde{\mathbf{p}} \in \mathbb{P}^3\\&amp;\color{red}{^{G}\mathbf{R}_B} \in \mathbb{R}^{3\times 3}\\&amp; \color{blue}{^{G}\mathbf{t}_B} \in \mathbb{R}^3\\ &amp;\color{magenta}{^{G}\mathbf{T}_B}\in \mathbb{R}^{3 \times 3}\end{align}$$`
+]
+]
+]
+
+???
+같은 형식, 다른 차원
+
+---
+class: inverse, center, middle, title-slide, animated pulse
+# 🤸🏻‍ 좌표의 역변환
+## Inverse Transformations
+
+---
+# 좌표의 역변환
+
+.middle-20[![:scale 55%](figs/rigid-body-motion-42-00.png)]
+--
+.middle-20[![:scale 55%](figs/rigid-body-motion-42-01.png)]
+--
+.middle-20[![:scale 55%](figs/rigid-body-motion-42-02.png)]
+--
+.middle-20[![:scale 55%](figs/rigid-body-motion-42-03.png)]
+--
+.middle-20[![:scale 55%](figs/rigid-body-motion-42-04.png)]
+
+
+---
+# 좌표의 역변환
+
+.pull-up-5[
+.pull-left-50[
+- 순방향 
+`$$\begin{align}^G\mathbf{p}&amp;=\color{red}{^{G}\mathbf{R}_B}^B\mathbf{p} + \color{blue}{^{G}\mathbf{t}_B}\end{align}$$`
+- 역방향
+`$$\begin{align}^B\mathbf{p} &amp;= \color{red}{^{G}\mathbf{R}_B^{-1}}\left(^G\mathbf{p} - \color{blue}{^{G}\mathbf{t}_B}\right)\\
+&amp;=\color{red}{^{G}\mathbf{R}_B^\top}^G\mathbf{p} - \color{red}{^{G}\mathbf{R}_B^\top} \color{blue}{^{G}\mathbf{t}_B}\\
+&amp;=\color{orange}{^{B}\mathbf{R}_G}^G\mathbf{p} + \color{green}{^{B}\mathbf{t}_G}\end{align}$$`
+`$$\therefore\begin{align}\color{orange}{^{B}\mathbf{R}_G} = \color{red}{^{G}\mathbf{R}_B^\top}, \;\; \color{green}{^{B}\mathbf{t}_G} = - \color{red}{^{G}\mathbf{R}_B^\top} \color{blue}{^{G}\mathbf{t}_B}\end{align}$$`
+]
+
+.pull-right-50[
+- 순방향 
+`$$\begin{align}^G\tilde{\mathbf{p}}&amp;=\color{magenta}{^{G}\mathbf{T}_B}^B\tilde{\mathbf{p}}\end{align}$$`
+- 역방향
+`$$\begin{align}^B\tilde{\mathbf{p}}&amp;=\color{magenta}{^{G}\mathbf{T}_B^{-1}}^G\tilde{\mathbf{p}}\\
+&amp;=\color{magenta}{^{B}\mathbf{T}_G}^G\tilde{\mathbf{p}}\end{align}$$`
+`$$\therefore\begin{align}\color{magenta}{^{B}\mathbf{T}_G} &amp;= \left[\begin{array}{r|r}\color{orange}{^{B}\mathbf{R}_G} &amp; \color{green}{^{B}\mathbf{t}_G}\\\hline \mathbf{0}^\top &amp; 1\end{array}\right] \\&amp;= \left[\begin{array}{r|r}\color{red}{^{G}\mathbf{R}_B^\top} &amp; - \color{red}{^{G}\mathbf{R}_B^\top} \color{blue}{^{G}\mathbf{t}_B}\\\hline \mathbf{0}^\top &amp; 1\end{array}\right]\end{align}$$`
+]
+]
+
+---
+# 좌표의 역변환
+
+- 검산
+.font110[
+`$$\color{magenta}{^{G}\mathbf{T}_B} \left(\color{magenta}{^{G}\mathbf{T}_B}\right)^{-1} = \left(\color{magenta}{^{G}\mathbf{T}_B}\right)^{-1} \color{magenta}{^{G}\mathbf{T}_B}= \mathbf{I}$$`
+`$$\begin{align}
+\left[\begin{array}{r|r}\color{red}{^{G}\mathbf{R}_B} &amp; \color{blue}{^{G}\mathbf{t}_B}\\\hline \mathbf{0}^\top &amp; 1\end{array}\right]\left[\begin{array}{r|r}\color{red}{^{G}\mathbf{R}_B^\top} &amp; -\color{red}{^{G}\mathbf{R}_B^\top}\color{blue}{^{G}\mathbf{t}_B}\\\hline \mathbf{0}^\top &amp; 1\end{array}\right] &amp;= \mathbf{I}\\\left[\begin{array}{r|r}\color{red}{^{G}\mathbf{R}_B^\top} &amp; -\color{red}{^{G}\mathbf{R}_B^\top}\color{blue}{^{G}\mathbf{t}_B}\\\hline \mathbf{0}^\top &amp; 1\end{array}\right]\left[\begin{array}{r|r}\color{red}{^{G}\mathbf{R}_B} &amp; \color{blue}{^{G}\mathbf{t}_B}\\\hline \mathbf{0}^\top &amp; 1\end{array}\right]&amp;= \mathbf{I}\end{align}$$`
+]
+
+
+---
+class: inverse, center, middle, title-slide, animated pulse
+# 🤹 좌표 변환의 조합 
+## Composition of Transformations
+
+---
+# 좌표 변환의 조합 
+
+.middle-16[![:scale 63%](figs/rigid-body-motion-43-01.png)]
+--
+.middle-16[![:scale 63%](figs/rigid-body-motion-43-02.png)]
+--
+.middle-16[![:scale 63%](figs/rigid-body-motion-43-03.png)]
+--
+.middle-16[![:scale 63%](figs/rigid-body-motion-43-04.png)]
+--
+.middle-16[![:scale 63%](figs/rigid-body-motion-43-05.png)]
+--
+.middle-16[![:scale 63%](figs/rigid-body-motion-43-06.png)]
+--
+.middle-16[![:scale 63%](figs/rigid-body-motion-43-07.png)]
+
+---
+# 좌표 변환의 조합 
+
+.pull-up-2[
+.pull-left-47[
+1. A &amp;rArr; B
+`$$^B\mathbf{p} =\color{red}{^{B}\mathbf{R}_A}^A\mathbf{p} + \color{red}{^{B}\mathbf{t}_A}$$`
+
+2. B &amp;rArr; C
+`$$^C\mathbf{p} =\color{blue}{^{C}\mathbf{R}_B}^B\mathbf{p} + \color{blue}{^{C}\mathbf{t}_B}$$`
+
+3. A &amp;rArr; C
+`$$\begin{align}^C\mathbf{p} &amp;=\color{blue}{^{C}\mathbf{R}_B}(\color{red}{^{B}\mathbf{R}_A}^A\mathbf{p} + \color{red}{^{B}\mathbf{t}_A}) + \color{blue}{^{C}\mathbf{t}_B}\\
+&amp;=\color{blue}{^{C}\mathbf{R}_B}\color{red}{^{B}\mathbf{R}_A}^A\mathbf{p} + \color{blue}{^{C}\mathbf{R}_B}\color{red}{^{B}\mathbf{t}_A} + \color{blue}{^{C}\mathbf{t}_B}\\
+&amp;=\color{green}{^{C}\mathbf{R}_A}^A\mathbf{p} + \color{green}{^{C}\mathbf{t}_A}\end{align}$$`
+]
+
+.pull-right-53[
+1. A &amp;rArr; C
+`$$\begin{align}\color{green}{^{C}\mathbf{T}_A} 
+&amp;= \color{blue}{^{C}\mathbf{T}_B}\color{red}{^{B}\mathbf{T}_A}\\
+&amp;=\left[\begin{array}{r|r}\color{blue}{^{C}\mathbf{R}_B} &amp; \color{blue}{^{C}\mathbf{t}_B}\\\hline \mathbf{0}^\top &amp; 1\end{array}\right]\left[\begin{array}{r|r}\color{red}{^{B}\mathbf{R}_A} &amp; \color{red}{^{B}\mathbf{t}_A}\\\hline \mathbf{0}^\top &amp; 1\end{array}\right]\\
+&amp;=\left[\begin{array}{c|c}\color{blue}{^{C}\mathbf{R}_B}\color{red}{^{B}\mathbf{R}_A} &amp; \color{blue}{^{C}\mathbf{R}_B}\color{red}{^{B}\mathbf{t}_A} + \color{blue}{^{C}\mathbf{t}_B}\\\hline \mathbf{0}^\top &amp; 1\end{array}\right]\\
+&amp;=\left[\begin{array}{r|r}\color{green}{^{C}\mathbf{R}_A} &amp; \color{green}{^{C}\mathbf{t}_A}\\\hline \mathbf{0}^\top &amp; 1\end{array}\right]\end{align}$$`
+]
+]
+
+
+---
+# 좌표 변환의 조합: 곱은 오른쪽에서 왼쪽으로
+
+.pull-down-6[
+1. A &amp;rArr; B  &amp;rArr; C
+`$$\begin{align}\color{magenta}{^{C}\mathbf{T}_A} 
+&amp;= \color{blue}{^{C}\mathbf{T}_B}\color{red}{^{B}\mathbf{T}_A}\end{align}$$`
+
+1. A &amp;rArr; B  &amp;rArr; C &amp;rArr; D
+`$$\begin{align}\color{magenta}{^{D}\mathbf{T}_A} 
+&amp;= \color{green}{^{D}\mathbf{T}_C}\color{blue}{^{C}\mathbf{T}_B}\color{red}{^{B}\mathbf{T}_A}\end{align}$$`
+]
+
+---
+class: inverse, center, middle, title-slide, animated pulse
+# 📝 요약
+
+---
+# 좌표 변환
+
+.pull-left[
+1. 점의 이동
+   `$$\mathbf{p}'=\color{red}{\mathbf{R}}\mathbf{p} + \color{blue}{\mathbf{t}}$$`
+1. 좌표 변환
+`$$^G\mathbf{p}=\color{red}{^{G}\mathbf{R}_B}^B\mathbf{p} + \color{blue}{^{G}\mathbf{t}_B}$$`
+1. 물체의 자세
+`$$^G\tilde{\mathbf{p}}=\color{magenta}{^{G}\mathbf{T}_B}^B\tilde{\mathbf{p}}$$`
+]
+
+.pull-right[
+1. 좌표의 역변환
+$$ \color{orange}{^{B}\mathbf{T}_A} = \left(\color{magenta}{^{G}\mathbf{T}_B}\right)^{-1}$$
+1. 좌표 변환의 조합
+`$$\begin{align}\color{green}{^{C}\mathbf{T}_A} 
+&amp;= \color{blue}{^{C}\mathbf{T}_B}\color{red}{^{B}\mathbf{T}_A}\end{align}$$`
+]
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="swan/macros.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "default",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+<!-- 
+Ref) https://github.com/gadenbuie/xaringan-logo
+-->
+
+<!--
+<style>
+.logo {
+  background-image: url(xaringan.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  width: 110px;
+  height: 128px;
+  z-index: 0;
+}
+</style>
+-->
+
+<style>
+.logo {
+    position: absolute;
+	top: 94%;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+	text-align: center;
+}
+</style>
+
+<script>
+document
+  .querySelectorAll(
+    '.remark-slide-content' +
+    ':not(.title-slide)' +
+    // add additional classes to exclude here, e.g.
+    ':not(.inverse)' +
+    ':not(.hide-logo)'
+  )
+  .forEach(el => {
+    el.innerHTML += '<div class="logo">컴퓨터 비전</div>';
+  });
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

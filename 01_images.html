@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>🖼️ 이미지</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="김수환" />
+    <script src="libs/header-attrs-2.8/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+    <link href="libs/tile-view-0.2.6/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view-0.2.6/tile-view.js"></script>
+    <link href="libs/animate.css-3.7.2/animate.xaringan.css" rel="stylesheet" />
+    <link href="libs/tachyons-4.12.0/tachyons.min.css" rel="stylesheet" />
+    <script src="libs/fabric-4.3.1/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble-0.0.1/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble-0.0.1/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#FF0000"],"pen_size":3,"eraser_size":30}) })</script>
+    <script src="libs/freezeframe-5.0.2/freezeframe.min.js"></script>
+    <script src="libs/xaringanExtra-freezeframe-0.0.1/freezeframe-init.js"></script>
+    <script id="xaringanExtra-freezeframe-options" type="application/json">{"selector":"img[src$=\"gif\"]","trigger":"click","overlay":false,"responsive":true,"warnings":true}</script>
+    <link rel="stylesheet" href="swan/swan.css" type="text/css" />
+    <link rel="stylesheet" href="swan/swan-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# 🖼️ 이미지
+## Images
+### 김수환
+### <a href="https://www.soohwan.kim" class="uri">https://www.soohwan.kim</a>
+
+---
+
+
+
+# 목차
+
+.pull-down-8[.middle-30[![:scale 90%](figs/big-picture-00.png)]]
+--
+.pull-down-8[.middle-30[![:scale 90%](figs/big-picture-01.png)]]
+
+---
+class: inverse, center, middle, title-slide, animated pulse
+
+# 🎯  학습목표
+
+---
+# 학습목표
+
+.content-list[
+1. 흑백 이미지의 구조를 이해한다.
+1. 컬러 이미지의 구조를 이해한다.
+]
+
+???
+컴퓨터 비전은 카메라로부터 입력된 영상을 분석하고 이해하는 작업입니다. 따라서 우선 영상, 혹은 영어로 이미지가 어떻게 이루어져 있는지 살펴보도록 하겠습니다. 먼저 가장 간단한 흑백 이미지를 살펴보고 컬러를 추가된 컬러 이미지에 대해서 살펴보겠습니다.
+
+---
+class: inverse, center, middle, title-slide, animated pulse
+# 🦓️ 흑백 이미지
+## Grayscale Image
+
+---
+# 흑백 이미지
+
+.pull-up-2[
+.center[
+![:scale 100%](figs/KITTI_BW_resized.png)
+.right[
+.font70[
+The KITTI Vision Benchmark Suite&lt;sup&gt;1&lt;/sup&gt;]
+]
+]
+]
+
+.footer[
+1. http://www.cvlibs.net/datasets/kitti/index.php
+]
+
+--
+.middle-80[
+.blue[
+.font120[
+영상 속에 무엇이 보이는지 설명해 보세요.
+]
+]
+]
+
+
+---
+# 흑백 이미지의 데이터 구조
+
+.pull-up-3[
+.center[![:scale 60%](figs/image-00.png)]
+]
+
+.center[
+1 픽셀의 데이터량 = 8 bits = 1 byte = 0 ~ 255
+]
+
+--
+.middle-82[
+.font120[
+.red[
+컴퓨터가 영상을 이해하는 것은 왜 어려울까?
+]
+]
+]
+
+???
+컬러이미지 RGB면 channel이 3개
+2차원 이미지일 때 한 픽셀이 차지하는 byte수를 depth
+
+---
+# 컴퓨터가 보는 흑백 이미지
+
+.pull-down-3[
+.font120[
+$$
+`\begin{bmatrix}
+55 &amp; 67 &amp; 77 &amp; 75 &amp; 80 &amp; 87 &amp; 86 &amp; 84 &amp; 77 &amp; 75 \\ 
+59 &amp; 79 &amp; 75 &amp; 66 &amp; 73 &amp; 76 &amp; 69 &amp; 58 &amp; 57 &amp; 60 \\
+64 &amp; 76 &amp; 75 &amp; 67 &amp; 69 &amp; 71 &amp; 63 &amp; 44 &amp; 38 &amp; 46 \\
+60 &amp; 54 &amp; 59 &amp; 65 &amp; 57 &amp; 55 &amp; 58 &amp; 42 &amp; 27 &amp; 34 \\
+62 &amp; 56 &amp; 59 &amp; 76 &amp; 55 &amp; 46 &amp; 50 &amp; 42 &amp; 35 &amp; 40 \\
+58 &amp; 72 &amp; 90 &amp; 106 &amp; 88 &amp; 79 &amp; 68 &amp; 44 &amp; 38 &amp; 34 \\
+57 &amp; 70 &amp; 73 &amp; 79 &amp; 89 &amp; 92 &amp; 75 &amp; 46 &amp; 30 &amp; 23 \\
+55 &amp; 53 &amp; 54 &amp; 65 &amp; 74 &amp; 73 &amp; 67 &amp; 51 &amp; 24 &amp; 24 \\
+53 &amp; 46 &amp; 48 &amp; 53 &amp; 57 &amp; 57 &amp; 58 &amp; 54 &amp; 32 &amp; 32 \\
+52 &amp; 46 &amp; 48 &amp; 56 &amp; 52 &amp; 45 &amp; 59 &amp; 69 &amp; 57 &amp; 42
+\end{bmatrix}`
+$$
+]
+]
+
+.middle-82[
+.font120[
+.red[
+이 부분 행렬이 아까 본 영상 속에서 어느 부분을 나타낼까?
+]
+]
+]
+
+---
+# 흑백 이미지
+
+.pull-up-2[
+.center[
+![:scale 100%](figs/KITTI_BW_resized_annotated.png)
+.right[
+.font70[
+The KITTI Vision Benchmark Suite&lt;sup&gt;1&lt;/sup&gt;]
+]
+]
+]
+
+.footer[
+1. http://www.cvlibs.net/datasets/kitti/index.php
+]
+
+.middle-80[
+.font120[
+.red[
+숫자로 이루어진 행렬을 보고 무엇을 나타내는지 이해하는 것은 매우 어려운 일이다.
+]
+]
+]
+
+---
+# 흑백 이미지 좌표
+
+.pull-up-3[
+.center[
+![:scale 55%](figs/image-coords.png)
+]
+]
+
+
+???
+수식으로 (x, y)를 표현할 때가 종종 있다. 
+3차원 이미지의 경우 (row, col, depth)에서 depth까지 안 안렬줘도 되니까
+
+---
+# 흑백 이미지 = 함수 `\(I(x, y)\)`
+
+.pull-up-2[
+.center[
+![:scale 90%](figs/image-as-function.png)
+]
+]
+
+.footer-right[https://www.programmersought.com/article/57433635429/]
+
+???
+따라서 흑백이미지는 두개의 독립변수 `\(x\)`, `\(y\)`를 가지는 다변수 함수라고 볼 수 있습니다. 여기서 
+
+
+---
+class: inverse, center, middle, title-slide, animated pulse
+# 🎨 컬러 이미지
+## Color Image
+
+---
+# 컬러 차트
+
+.pull-up-2[
+.center[![:scale 70%](figs/color-chart.png)]
+]
+
+.middle-75[
+.center[
+.font120[
+.red[
+어떻게 하면 다양한 색을 체계적으로 표현할 수 있을까?
+]
+]
+]
+]
+
+.footer-right[https://htmlcolorcodes.com/color-chart/]
+
+???
+이세상에는 엄청나게 다양한 색이 존재하는 데 그걸 어떻게 체계적으로 표현할 수 있을까?
+
+---
+# 빛의 3원색
+
+.pull-up-5[
+.center[![:scale 45%](figs/rgb.png)]
+]
+
+.footer-right[https://techterms.com/definition/rgb]
+
+???
+빛의 삼원색 RGB
+색의 삼원색 CMY
+
+---
+# 모니터 픽셀 배열
+
+.pull-up-2[
+.center[![:scale 45%](figs/Pixel_geometry_01_Pengo.jpg)]
+]
+
+.footer-right[https://en.wikipedia.org/wiki/Pixel_geometry]
+
+???
+진짜 RGB가 빛의 삼원색이야?
+
+---
+# 색 공간
+
+.pull-up-0[
+.center[![:scale 90%](figs/rgb-hsv.jpeg)]
+]
+
+.footer-right[https://medium.com/neurosapiens/segmentation-and-classification-with-hsv-8f2406c62b39]
+
+???
+얼마나 빨갛냐, 초롷냐, 파랗냐?
+색상, 채도, 명도
+
+
+---
+# 컬러 깊이
+
+.pull-up-4[
+.center[![:scale 65%](figs/color-depth.jpg)]
+]
+
+.footer-right[http://www.digitalbirdphotography.com/photoshop/fundamentals/rainbows.jpg]
+
+???
+8bit 혹은 1byte로도 생각보다 충분하다
+컴퓨터에서는 그 다음은 2byte인데 너무 많다.
+
+---
+# 컬러 조합
+
+.pull-down-10[
+.center[![:scale 70%](figs/color-combination.png)]
+]
+
+
+---
+# 컬러 이미지
+
+.pull-up-2[
+.center[
+![:scale 100%](figs/KITTI_resized.png)
+.right[
+.font70[
+The KITTI Vision Benchmark Suite&lt;sup&gt;1&lt;/sup&gt;]
+]
+]
+]
+
+.footer[
+1. http://www.cvlibs.net/datasets/kitti/index.php
+]
+
+
+---
+# 컬러 이미지의 데이터 구조
+
+.pull-up-4[
+.center[![:scale 70%](figs/image-01.png)]
+]
+
+???
+컬러이미지 RGB면 channel이 3개
+2차원 이미지일 때 한 픽셀이 차지하는 byte수를 depth
+
+---
+# 이미지 변환: RGB &amp;hArr; GRAY
+
+.pull-down-4[
+- RGB &amp;rArr; GRAY
+`$$I \leftarrow 0.299R+0.587G+0.114B$$`
+
+- GRAY &amp;rArr; RGB
+`$$\begin{align}R &amp;\leftarrow I\\ G &amp;\leftarrow I \\ B &amp;\leftarrow I\end{align}$$`
+]
+
+.footer-right[https://docs.opencv.org/4.4.0/de/d25/imgproc_color_conversions.html]
+
+???
+대부분의 경우 이미지 프로세싱은 컬러 정보가 중요하지 않은 컬러이미지를 흑백이미지로 
+
+---
+class: inverse, center, middle, title-slide, animated pulse
+# 📝 요약
+
+---
+# 이미지
+
+.pull-up-3[
+.pull-left[
+- 흑백 이미지
+   - 2차원 배열
+   - 픽셀당 8 bits = 1 byte
+
+
+.center[![:scale 100%](figs/image-00.png)]
+]
+
+.pull-right[
+- 컬러 이미지
+   - 3차원 배열
+   - RGB 3개의 채널
+   - 픽셀당 3x8 bits = 24 bits = 3 bytes
+
+
+.center[![:scale 100%](figs/image-01.png)]
+]
+]
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="swan/macros.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "default",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+<!-- 
+Ref) https://github.com/gadenbuie/xaringan-logo
+-->
+
+<!--
+<style>
+.logo {
+  background-image: url(xaringan.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  width: 110px;
+  height: 128px;
+  z-index: 0;
+}
+</style>
+-->
+
+<style>
+.logo {
+    position: absolute;
+	top: 94%;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+	text-align: center;
+}
+</style>
+
+<script>
+document
+  .querySelectorAll(
+    '.remark-slide-content' +
+    ':not(.title-slide)' +
+    // add additional classes to exclude here, e.g.
+    ':not(.inverse)' +
+    ':not(.hide-logo)'
+  )
+  .forEach(el => {
+    el.innerHTML += '<div class="logo">컴퓨터 비전</div>';
+  });
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

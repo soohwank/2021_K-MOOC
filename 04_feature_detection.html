@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>🧿 영상 특징점 검출</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="김수환" />
+    <script src="libs/header-attrs-2.8/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+    <link href="libs/tile-view-0.2.6/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view-0.2.6/tile-view.js"></script>
+    <link href="libs/animate.css-3.7.2/animate.xaringan.css" rel="stylesheet" />
+    <link href="libs/tachyons-4.12.0/tachyons.min.css" rel="stylesheet" />
+    <script src="libs/fabric-4.3.1/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble-0.0.1/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble-0.0.1/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#FF0000"],"pen_size":3,"eraser_size":30}) })</script>
+    <script src="libs/freezeframe-5.0.2/freezeframe.min.js"></script>
+    <script src="libs/xaringanExtra-freezeframe-0.0.1/freezeframe-init.js"></script>
+    <script id="xaringanExtra-freezeframe-options" type="application/json">{"selector":"img[src$=\"gif\"]","trigger":"click","overlay":false,"responsive":true,"warnings":true}</script>
+    <link rel="stylesheet" href="swan/swan.css" type="text/css" />
+    <link rel="stylesheet" href="swan/swan-fonts.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# 🧿 영상 특징점 검출
+## Feature Detection
+### 김수환
+### <a href="https://www.soohwan.kim" class="uri">https://www.soohwan.kim</a>
+
+---
+
+
+
+# 목차
+
+.pull-down-8[.middle-30[![:scale 90%](figs/big-picture-00.png)]]
+--
+.pull-down-8[.middle-30[![:scale 90%](figs/big-picture-03.png)]]
+
+
+---
+class: inverse, center, middle, title-slide, animated pulse
+
+# 🎯  학습목표
+
+---
+# 학습목표
+
+1. 영상 특징점을 이해한다.
+   - 영상 특징점 = 코너점
+1. 해리스 코너 검출기
+1. 쉬-토마시 코너 검출기
+
+---
+class: inverse, center, middle, title-slide, animated pulse
+# 🧿 영상 특징점
+## Visual Features
+
+---
+# 숨은 그림 찾기
+
+.pull-up-3[
+.center[
+![:scale 43%](figs/feature_building.jpg)
+]
+]
+
+.footer-right[https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_feature2d/py_features_meaning/py_features_meaning.html]
+
+
+.middle-76[
+.font120[
+.blue[
+A, B, C, D, E, F의 그림 조각을 그림 속에서 찾아보세요.
+]
+]
+]
+
+--
+.middle-81[
+.font120[
+.red[
+A, B / C, D 보다 E, F 그림 조각은 왜 확실히 찾을 수 있을까?
+]
+]
+]
+
+???
+그림의 윗쪽을 보면 A부터 F까지 여섯개의 그림 조각이 있습니다. 자 그럼 여섯개의 이미지 패치가 각각 이미지의 어디에 있는지 한 번 찾아볼가요?
+
+A, B: 면 (좌우로 이동해도 똑같다.)
+C, D: 직선 (직선 방향으로 이동해도 똑같다.)
+E, F: 코너 (좌우로 조금만 이동해도 다르다.)
+
+---
+# 숨은 그림 찾기
+
+.middle-20[.center[![:scale 75%](figs/feature_detection_01.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_02.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_03.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_04.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_05.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_06.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_07.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_08.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_09.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_10.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_11.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_12.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_13.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_14.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_15.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_16.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_17.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_18.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_19.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_20.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_21.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_22.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_23.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_24.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_25.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_26.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_27.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_28.png)]]
+--
+.middle-20[.center[![:scale 75%](figs/feature_detection_29.png)]]
+
+--
+.middle-82[
+.font120[
+.red[
+이미지 패치를 조금만 움직여도 차이가 큰 영역이 좋은 영상 특징점이다! (예: 코너)
+]
+]
+]
+
+---
+# 영상 특징점 = 코너
+
+.pull-up-2[
+.center[
+![:scale 42%](figs/good-features-to-track-00.png)
+]
+]
+
+--
+.middle-84[
+.font120[
+.blue[
+어떻게 하면 영상 속에서 특징점 또는 코너를 찾을 수 있을까?
+]
+]
+]
+
+---
+class: inverse, center, middle, title-slide, animated pulse
+# 🧿 해리스 코너 검출기
+## Harris Corner Detector
+
+---
+# 이미지 차 제곱의 가중치 합 (WSSD)
+
+- 영상 특징점
+   - 영상에서 조금만 움직여도 차이가 큰 영역을 찾자!
+   - 영상에서 주위와 확연히 다른 영역을 찾자!
+
+--
+`$$\color{magenta}{E(u, v)} = \sum_{x, y} \color{green}{w(x, y)} \Big(\color{red}{I(x+u, y+v)} - \color{blue}{I(x, y)}\Big)^2$$`
+
+--
+   - `\(\color{blue}{I(x, y)}\)`: 원래 이미지 패치
+
+--
+   - `\(\color{red}{I(x+u, y+v)}\)`: `\(x\)`축으로 `\(u\)`만큼, `\(y\)`축으로 `\(v\)`만큼 움직인 곳의 이미지 패치
+
+--
+   - `\(\color{green}{w(x, y)}\)`: 픽셀의 중요도를 나타내는 가중치 윈도우, 예: 박스 커널, 가우시안 커널
+
+--
+   - `\(\color{magenta}{E(u, v)}\)`: 두 이미지 패치의 다른 정도 (Weighted Sum of Squared Difference, WSSD)
+   
+   
+---
+# 이미지 차 제곱의 가중치 합 (WSSD)
+
+.middle-20[.center[![:scale 90%](figs/harris_corner_00.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_01.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_02.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_03.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_04.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_05.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_06.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_07.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_08.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_09.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_10.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_11.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_12.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_13.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_14.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_15.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_16.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_17.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_18.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_19.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_20.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_21.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_22.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_23.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_24.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_25.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_26.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_27.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_28.png)]]
+--
+.middle-20[.center[![:scale 90%](figs/harris_corner_29.png)]]
+
+---
+# 이미지 차 제곱의 가중치 합 (WSSD)
+
+.pull-up-2[
+| &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;WSSD | Planar Patch | &amp;nbsp;&amp;nbsp; Edge Patch &amp;nbsp;&amp;nbsp; | &amp;nbsp;&amp;nbsp; Corner Patch &amp;nbsp;&amp;nbsp; |
+|:---|---:|---:|---:|
+| `\(E(-1, -1)\)` | `\(0\)` | `\(\color{blue}{21,675}\)` | `\(\color{blue}{21,675}\)` |
+| `\(E(\:\:\:0, -1)\)` | `\(0\)` | `\(\color{blue}{21,675}\)` | `\(\color{green}{14,450}\)` |
+| `\(E(\:\:\:1, -1)\)` | `\(0\)` | `\(\color{blue}{21,675}\)` | `\(\color{blue}{21,675}\)` |
+| `\(E(\:\:\:1, \:\:\:0)\)` | `\(0\)` | `\(0\)` | `\(\color{green}{14,450}\)` |
+| `\(E(\:\:\:1, \:\:\:1)\)` | `\(0\)` | `\(\color{blue}{21,675}\)` | `\(\color{blue}{21,675}\)` |
+| `\(E(\:\:\:0, \:\:\:1)\)` | `\(0\)` | `\(\color{blue}{21,675}\)` | `\(\color{green}{14,450}\)` |
+| `\(E(-1, \:\:\:1)\)` | `\(0\)` | `\(\color{blue}{21,675}\)` | `\(\color{red}{36,125}\)` |
+| `\(E(-1, \:\:\:0)\)` | `\(0\)` | `\(0\)` | `\(\color{green}{14,450}\)` |
+]
+
+--
+.middle-73[
+.font120[
+.blue[
+코너 영역이 주위 영역과 비교할 때 가장 차이가 크다
+]
+]
+]
+
+--
+.middle-78[
+.font120[
+.red[
+코너가 바로 영상의 특이한 부분, 즉 영상 특징점이다!
+]
+]
+]
+
+--
+.middle-83[
+.font120[
+.green[
+그런데 영상 속에서 코너는 어떻게 찾지?
+]
+]
+]
+
+---
+# 이미지 차 제곱의 가중치 합 (WSSD)
+
+.pull-up-2[
+.font90[
+- 함수의 1차 다항식 근사
+`$$\begin{align}&amp;\color{magenta}{f(\bar{x}+\delta x, \bar{y}+\delta y)} \approx \color{orange}{f(\bar{x}, \bar{y})} + \color{red}{f_x}\color{blue}{\delta x} + \color{red}{f_y}\color{blue}{\delta y}\end{align}$$`
+- WSSD의 1차 다항식 근사
+`$$\begin{align}\color{magenta}{E(u, v)} &amp;= \sum_{x, y} \color{green}{w(x, y)}\Big(\color{magenta}{I(x+u, y+v)} - \color{orange}{I(x, y)}\Big)^2\\
+&amp;\approx \sum_{x, y} \color{green}{w(x, y)}\Big(\color{orange}{I(x, y)} + \color{red}{I_x}\color{blue}{u} + \color{red}{I_y}\color{blue}{v} - \color{orange}{I(x, y)}\Big)^2\\
+&amp;= \sum_{x, y} \color{green}{w(x, y)}\Big(\color{red}{I_x}\color{blue}{u} + \color{red}{I_y}\color{blue}{v}\Big)^2\\
+&amp;= \sum_{x, y} \color{green}{w(x, y)}\Big(\color{red}{I_x^2}\color{blue}{u^2} + 2\color{red}{I_x I_y}\color{blue}{u v} + \color{red}{I_y^2}\color{blue}{v^2}\Big)\end{align}$$`
+]
+]
+
+---
+# 이미지 차 제곱의 가중치 합 (WSSD)
+
+.pull-up-3[
+.font110[
+`$$\begin{align}\color{magenta}{E(u, v)}
+&amp;\approx \sum_{x, y} \color{green}{w(x, y)}\color{blue}{\begin{bmatrix}u &amp; v\end{bmatrix}}\color{red}{\begin{bmatrix}I_x^2 &amp; I_x I_y\\I_x I_y &amp; I_y^2\end{bmatrix}}\color{blue}{\begin{bmatrix}u \\ v\end{bmatrix}}\\
+&amp;=\color{blue}{\begin{bmatrix}u &amp; v\end{bmatrix}}\left(\sum_{x, y} \color{green}{w(x, y)}\color{red}{\begin{bmatrix}I_x^2 &amp; I_x I_y\\I_x I_y &amp; I_y^2\end{bmatrix}}\right)\color{blue}{\begin{bmatrix}u \\ v\end{bmatrix}}\\
+&amp;=\color{blue}{\begin{bmatrix}u &amp; v\end{bmatrix}}\left(\color{red}{\left[\begin{array}{ll}\color{black}{\sum_{x, y}} \color{green}{w(x, y)}I_x^2 &amp; \color{black}{\sum_{x, y}} \color{green}{w(x, y)}I_x I_y\\ \color{black}{\sum_{x, y}} \color{green}{w(x, y)}I_x I_y &amp; \color{black}{\sum_{x, y}} \color{green}{w(x, y)}I_y^2\end{array}\right]}\right)\color{blue}{\begin{bmatrix}u \\ v\end{bmatrix}}\\
+&amp;=\color{blue}{\begin{bmatrix}u &amp; v\end{bmatrix}}\left(\color{red}{\left[\begin{array}{ll}\color{green}{K \otimes}I_x^2 &amp; \color{green}{K \otimes}I_x I_y\\ \color{green}{K \otimes}I_x I_y &amp; \color{green}{K \otimes}I_y^2\end{array}\right]}\right)\color{blue}{\begin{bmatrix}u \\ v\end{bmatrix}}\\
+&amp;= \color{blue}{\begin{bmatrix}u &amp; v\end{bmatrix}}\color{red}{\mathbf{M}}\color{blue}{\begin{bmatrix}u \\ v\end{bmatrix}}\end{align}$$`
+]
+]
+
+--
+.top-81.left-25[
+.font90[
+.green[
+- 행렬 `\(\color{red}{\mathbf{M}}\)`은 어떤 행렬인가?
+]
+]
+]
+
+--
+.top-86.left-25[
+.font90[
+.magenta[
+- 행렬 `\(\color{red}{\mathbf{M}}\)`이 어떨때 WSSD가 최대가 될까?
+]
+]
+]
+
+---
+# ① 행렬 `\(\color{red}{\mathbf{M}}\)`은 어떤 행렬인가?
+
+.pull-up-0[
+.font90[
+- 행렬 `\(\color{red}{\mathbf{M}}\)`
+`$$\color{red}{\mathbf{M}} = \color{blue}{\begin{bmatrix}u &amp; v\end{bmatrix}}\left(\color{red}{\left[\begin{array}{ll}\color{green}{K \otimes}I_x^2 &amp; \color{green}{K \otimes}I_x I_y\\ \color{green}{K \otimes}I_x I_y &amp; \color{green}{K \otimes}I_y^2\end{array}\right]}\right)\color{blue}{\begin{bmatrix}u \\ v\end{bmatrix}}$$`
+
+
+- 픽셀 중요도가 똑같다고 가정: `\(\color{green}{K} = \color{green}{B}\)`, i.e. `\(\color{green}{w(x, y) = \frac{1}{n}}\)`, `\(n\)`: 커널 윈도우 픽셀 개수
+`$$\color{red}{\mathbf{M}} = \color{green}{\frac{1}{n}}\color{red}{\left[\begin{array}{ll}\color{black}{\sum_{x, y}} I_x^2 &amp; \color{black}{\sum_{x, y}} I_x I_y\\ \color{black}{\sum_{x, y}} I_x I_y &amp; \color{black}{\sum_{x, y}} I_y^2\end{array}\right]}$$`
+]
+]
+
+---
+# ① 행렬 `\(\color{red}{\mathbf{M}}\)`은 어떤 행렬인가?
+
+.middle-20[.center[![:scale 80%](figs/what_is_m_00.png)]]
+--
+.middle-20[.center[![:scale 80%](figs/what_is_m_01.png)]]
+--
+.middle-20[.center[![:scale 80%](figs/what_is_m_02.png)]]
+--
+.middle-20[.center[![:scale 80%](figs/what_is_m_03.png)]]
+--
+.middle-20[.center[![:scale 80%](figs/what_is_m_04.png)]]
+--
+.middle-20[.center[![:scale 80%](figs/what_is_m_05.png)]]
+--
+.middle-20[.center[![:scale 80%](figs/what_is_m_06.png)]]
+--
+.middle-20[.center[![:scale 80%](figs/what_is_m_07.png)]]
+--
+.middle-20[.center[![:scale 80%](figs/what_is_m_08.png)]]
+--
+.middle-20[.center[![:scale 80%](figs/what_is_m_09.png)]]
+--
+.middle-20[.center[![:scale 80%](figs/what_is_m_10.png)]]
+--
+.middle-20[.center[![:scale 80%](figs/what_is_m_11.png)]]
+--
+.middle-20[.center[![:scale 80%](figs/what_is_m_12.png)]]
+--
+.middle-20[.center[![:scale 80%](figs/what_is_m_13.png)]]
+--
+.middle-20[.center[![:scale 80%](figs/what_is_m_14.png)]]
+--
+.middle-20[.center[![:scale 80%](figs/what_is_m_15.png)]]
+--
+.middle-20[.center[![:scale 80%](figs/what_is_m_16.png)]]
+--
+.middle-20[.center[![:scale 80%](figs/what_is_m_17.png)]]
+--
+.middle-20[.center[![:scale 80%](figs/what_is_m_18.png)]]
+--
+.middle-20[.center[![:scale 80%](figs/what_is_m_19.png)]]
+--
+.middle-20[.center[![:scale 80%](figs/what_is_m_20.png)]]
+--
+.middle-20[.center[![:scale 80%](figs/what_is_m_21.png)]]
+--
+.middle-20[.center[![:scale 80%](figs/what_is_m_22.png)]]
+
+---
+# ① 행렬 `\(\color{red}{\mathbf{M}}\)`은 어떤 행렬인가?
+
+.font95[
+- 픽셀 중요도가 똑같다고 가정: `\(\color{green}{w(x, y) = \frac{1}{n}}\)`
+`$$\color{red}{\mathbf{M}} = \color{green}{\frac{1}{n}}\color{red}{\left[\begin{array}{ll}\color{black}{\sum_{x, y}} I_x^2 &amp; \color{black}{\sum_{x, y}} I_x I_y\\ \color{black}{\sum_{x, y}} I_x I_y &amp; \color{black}{\sum_{x, y}} I_y^2\end{array}\right]}$$`
+]
+
+.middle-74[
+.font105[
+.red[
+행렬 `\(\color{red}{\mathbf{M}}\)`은 이미지의 특정 영역 내에서 이미지 그래디언트 `\([I_x, I_y]^\top\)`의 2차 모멘트 행렬(Second Moment Matrix) `\(\times 1/n\)`이다!
+]
+]
+]
+
+--
+.font95[
+- 공분산 행렬 (Covariance Matrix)
+`$$\color{green}{\boldsymbol\Sigma} = \begin{bmatrix}\color{red}{\sigma_{xx}^2} &amp; \color{magenta}{\sigma_{xy}^2}\\ \color{magenta}{\sigma_{xy}^2} &amp; \color{blue}{\sigma_{yy}^2}\end{bmatrix} = \frac{1}{n}\begin{bmatrix}\sum_{i=1}^n (\color{red}{x_i} - \color{green}{\bar{x}})^2 &amp; \sum_{i=1}^n (\color{red}{x_i} - \color{green}{\bar{x}})(\color{blue}{y_i} - \color{green}{\bar{y}})\\\sum_{i=1}^n (\color{red}{x_i} - \color{green}{\bar{x}})(\color{blue}{y_i} - \color{green}{\bar{y}}) &amp; \sum_{i=1}^n (\color{blue}{y_i} - \color{green}{\bar{y}})^2\end{bmatrix}$$`
+]
+
+.middle-78[
+.font105[
+.blue[
+`\(1/n \times\)` 2차 모멘트 행렬은 .green[평균]기준 공분산 행렬이 아니라 .black[원점 (0, 0)] 기준 공분산 행렬이다.
+]
+]
+]
+
+--
+.middle-82[
+.font105[
+.magenta[
+중요도는 각 그래디언트 벡터를 확대/축소 할뿐 `\(\color{green}{w(x, y)}\color{red}{[I_x, I_y]^\top}\)`, 행렬 `\(\color{red}{\mathbf{M}}\)`은 여전히 공분산 행렬이다.
+]
+]
+]
+
+--
+.middle-86[
+.font105[
+.green[
+따라서 행렬 `\(\color{red}{\mathbf{M}}\)`은 양의 정부호행렬(Positive Semidefinite)이고 고유값은 음이 아닌 실수이다.
+]
+]
+]
+
+ 
+---
+# ① 행렬 `\(\color{red}{\mathbf{M}}\)`은 어떤 행렬인가?
+
+.middle-20[.center[![:scale 80%](figs/what_is_m_23.png)]]
+
+.middle-76[
+.font110[
+.red[
+행렬 `\(\color{red}{\mathbf{M}}\)`은 이미지의 특정 영역 내에서 이미지 그래디언트 `\([I_x, I_y]^\top\)`의 공분산 행렬과 같다!
+]
+]
+]
+
+.middle-82[
+.font110[
+.blue[
+주의: 이미지 그래디언트의 평균기준 공분산 행렬이 아니라 원점 (0, 0) 기준 공분산 행렬이다.
+]
+]
+]
+
+---
+# ② 행렬 `\(\color{red}{\mathbf{M}}\)`이 어떨때 WSSD가 최대가 될까?
+
+.pull-up-2[
+- 고유값 분해: `\(\|\color{blue}{\mathbf{u}}\|=\|\color{blue}{\mathbf{v}}\|=1\)`
+.pull-up-2[
+`$$\begin{align}
+\color{magenta}{E(u, v)}
+&amp;\approx \color{blue}{\begin{bmatrix}u &amp; v\end{bmatrix}}\color{red}{\mathbf{M}}\color{blue}{\begin{bmatrix}u \\ v\end{bmatrix}}, \;\; \color{red}{\mathbf{M}}: \text{Covariance Matrix}\\
+&amp;= \color{blue}{\mathbf{u}}^\top\left(\color{green}{\mathbf{Q}}\color{red}{\boldsymbol\Lambda}\color{green}{\mathbf{Q}^\top}\right)\color{blue}{\mathbf{u}} \quad\leftarrow \text{Eigen Decomposition}\\
+&amp;= \left(\color{green}{\mathbf{Q}}^\top\color{blue}{\mathbf{u}}\right)^\top\color{red}{\sqrt{\boldsymbol\Lambda}}\color{red}{\sqrt{\boldsymbol\Lambda}}\left(\color{green}{\mathbf{Q}^\top}\color{blue}{\mathbf{u}}\right)\\
+&amp;= \color{blue}{\mathbf{v}}^\top\color{red}{\sqrt{\boldsymbol\Lambda}}\color{red}{\sqrt{\boldsymbol\Lambda}}\color{blue}{\mathbf{v}} \qquad\:\:\leftarrow \color{green}{\mathbf{Q}}: \text{Rotation/Reflection}\\
+&amp;= \left(\color{red}{\sqrt{\boldsymbol\Lambda}}\color{blue}{\mathbf{v}}\right)^\top\left(\color{red}{\sqrt{\boldsymbol\Lambda}}\color{blue}{\mathbf{v}}\right)\\
+&amp;=\|\color{red}{\sqrt{\boldsymbol\Lambda}}\color{blue}{\mathbf{v}}\|^2
+\end{align}$$`
+]
+]
+
+--
+.middle-84[
+.font110[
+.magenta[
+행렬 `\(\color{red}{\mathbf{M}}\)`의 음이 아닌 두 고유값이 모두 크면 클수록 WSSD가 크다. 즉, 영상 특징점이다!
+]
+]
+]
+
+---
+# ② 행렬 `\(\color{red}{\mathbf{M}}\)`이 어떨때 WSSD가 최대가 될까?
+
+.pull-up-4[
+.center[
+![:scale 48%](figs/harris-corner-detection-03-03.png)
+]
+]
+
+.footer-right[http://www.cse.psu.edu/~rtc12/CSE486/lecture06.pdf]
+
+---
+# ② 행렬 `\(\color{red}{\mathbf{M}}\)`이 어떨때 WSSD가 최대가 될까?
+
+.footer-right[http://www.cse.psu.edu/~rtc12/CSE486/lecture06.pdf]
+
+.middle-20[![:scale 95%](figs/harris-corner-detection-04-02.png)]
+--
+.middle-20[![:scale 95%](figs/harris-corner-detection-04-03.png)]
+--
+.middle-20[![:scale 95%](figs/harris-corner-detection-04-04.png)]
+--
+.middle-20[![:scale 95%](figs/harris-corner-detection-05-02.png)]
+--
+.middle-20[![:scale 95%](figs/harris-corner-detection-05-03.png)]
+--
+.middle-20[![:scale 95%](figs/harris-corner-detection-05-04.png)]
+
+
+---
+# ② 행렬 `\(\color{red}{\mathbf{M}}\)`이 어떨때 WSSD가 최대가 될까?
+
+.footer-right[http://www.cse.psu.edu/~rtc12/CSE486/lecture06.pdf]
+
+.middle-20[.center[![:scale 34%](figs/harris_corner_response_score_01.png)]]
+--
+.middle-20[.center[![:scale 34%](figs/harris_corner_response_score_02.png)]]
+--
+.middle-20[.center[![:scale 34%](figs/harris_corner_response_score_03.png)]]
+--
+.middle-20[.center[![:scale 34%](figs/harris_corner_response_score_04.png)]]
+--
+.middle-20[.center[![:scale 34%](figs/harris_corner_response_score_05.png)]]
+--
+.middle-20[.center[![:scale 34%](figs/harris_corner_response_score_06.png)]]
+--
+.middle-20[.center[![:scale 34%](figs/harris_corner_response_score_07.png)]]
+--
+.middle-20[.center[![:scale 34%](figs/harris_corner_response_score_08.png)]]
+--
+.middle-20[.center[![:scale 34%](figs/harris_corner_response_score_09.png)]]
+
+--
+.middle-77[
+.font110[
+.blue[
+행렬 `\(\color{red}{\mathbf{M}}\)`의 두 고유값이 크면 클수록 WSSD가 크다. 즉, 코너가 영상 특징점이다! (재확인)
+]
+]
+]
+
+--
+.middle-82[
+.font110[
+.green[
+그러면 코너를 찾기 위해서 이미지속 모든 영역에서 행렬 `\(\color{red}{\mathbf{M}}\)`의 고유값을 꼭 구해야만 하나?
+]
+]
+]
+
+
+---
+# ② 행렬 `\(\color{red}{\mathbf{M}}\)`이 어떨때 WSSD가 최대가 될까?
+
+.pull-up-3[
+.font115[
+`$$\begin{align}
+&amp;{}^\exists\color{green}{\mathbf{x}} \neq \mathbf{0}, \; \color{red}{\mathbf{M}}\color{green}{\mathbf{x}} = \color{blue}{\lambda}\color{green}{\mathbf{x}} \;\;\text{ s.t. }\;\; \color{red}{\mathbf{M}}\succcurlyeq 0, \; \color{blue}{\lambda} \ge 0\\
+&amp;\Rightarrow\; (\color{red}{\mathbf{M}} - \color{blue}{\lambda} \mathbf{I})\color{green}{\mathbf{x}}=0 \\
+&amp;\Rightarrow\; \det(\color{red}{\mathbf{M}} - \color{blue}{\lambda} \mathbf{I})=0 \\
+&amp;\Rightarrow\; \det\left(\color{red}{\begin{bmatrix}m_{11} &amp; m_{12}\\ m_{21} &amp; m_{22}\end{bmatrix}} - \color{blue}{\begin{bmatrix}\lambda &amp; 0\\ 0 &amp; \lambda \end{bmatrix}}\right) = 0\\
+&amp;\Rightarrow\; \det\left(\begin{bmatrix}\color{red}{m_{11}} - \color{blue}{\lambda} &amp; \color{red}{m_{12}}\\ \color{red}{m_{21}} &amp; \color{red}{m_{22}} - \color{blue}{\lambda}\end{bmatrix}\right) = 0\\
+&amp;\Rightarrow (\color{red}{m_{11}}-\color{blue}{\lambda})(\color{red}{m_{22}}-\color{blue}{\lambda}) - \color{red}{m_{12}m_{21}} = 0\\
+&amp;\Rightarrow \color{blue}{\lambda}^2 - (\color{red}{m_{11}} + \color{red}{m_{22}})\color{blue}{\lambda} + \color{red}{m_{11}m_{22}}- \color{red}{m_{12}m_{21}} = 0\\
+&amp;\Rightarrow \color{blue}{\lambda}^2 - \text{trace}(\color{red}{\mathbf{M}})\color{blue}{\lambda} + \det(\color{red}{\mathbf{M}}) = 0\\
+&amp;\Rightarrow (\color{blue}{\lambda} - \color{green}{\lambda_1})(\color{blue}{\lambda} - \color{green}{\lambda_2}) = 0\\
+&amp;\Rightarrow\; \det(\color{red}{\mathbf{M}}) = \color{green}{\lambda_1\lambda_1}, \;\;\text{trace}(\color{red}{\mathbf{M}}) = \color{green}{\lambda_1 + \lambda_2}
+\end{align}$$`
+]
+]
+
+--
+.middle-85[
+.font110[
+.magenta[
+행렬 `\(\color{red}{\mathbf{M}}\)`의 고유값을 구할 필요없이 `\(\det(\color{red}{\mathbf{M}})\)`와 `\(\text{trace}(\color{red}{\mathbf{M}})\)`를 이용하자!
+]
+]
+]
+
+---
+# ② 행렬 `\(\color{red}{\mathbf{M}}\)`이 어떨때 WSSD가 최대가 될까?
+
+.pull-up-2[
+.font95[
+.pull-left-65[
+- `\(\color{red}{\mathbf{M}}\)`: Eigenvalues
+`$$\begin{align}\det(\color{red}{\mathbf{M}}) = \color{green}{\lambda_1\lambda_1}, \;\;\text{trace}(\color{red}{\mathbf{M}}) = \color{green}{\lambda_1} + \color{green}{\lambda_2}\end{align}$$`
+- Response Score
+`$$\color{magenta}{R} = \det(\color{red}{\mathbf{M}}) - \color{blue}{\kappa}\text{trace}^2(\color{red}{\mathbf{M}})$$`
+   - `\(\kappa \in [0.04, 0.06]\)`
+
+| Patch | Eigenvalues | `\(\det(\color{red}{\mathbf{M}})\)` | `\(\text{trace}(\color{red}{\mathbf{M}})\)` | Response Score |
+|:---:|:---|:---|:---|:---|
+| Flat | `\(\color{green}{\lambda_1}\)`, `\(\color{green}{\lambda_2}\)`: 모두 작다 | 매우 작은 양수 | 작은 양수 | `\(\mid R\mid\)`: 작은 수 |
+| Edge | `\(\color{green}{\lambda_1}\)`, `\(\color{green}{\lambda_2}\)`: 하나만 크다 | 큰 양수 | 작은 양수 | `\(R\)`: 큰 음수 |
+| Corner | `\(\color{green}{\lambda_1}\)`, `\(\color{green}{\lambda_2}\)`: 모두 크다 | 매우 큰 양수 | 큰 양수 | `\(R\)`: 큰 양수 |
+]
+]
+]
+
+.pull-right-35[
+.pull-down-0[
+.center[
+![:scale 80%](figs/harris_corner_response_score_09.png)
+]
+.center[
+![:scale 100%](figs/harris_corner_response_score.png)
+]
+]
+]
+
+.footer-right[http://www.cse.psu.edu/~rtc12/CSE486/lecture06.pdf]
+
+---
+# ② 행렬 `\(\color{red}{\mathbf{M}}\)`이 어떨때 WSSD가 최대가 될까?
+
+.center[
+![:scale 80%](figs/harris-corner-detection-10.png)
+]
+
+.footer-right[http://www.cse.psu.edu/~rtc12/CSE486/lecture06.pdf]
+
+---
+# ② 행렬 `\(\color{red}{\mathbf{M}}\)`이 어떨때 WSSD가 최대가 될까?
+
+.center[
+![:scale 80%](figs/harris-corner-detection-12.png)
+]
+
+.footer-right[http://www.cse.psu.edu/~rtc12/CSE486/lecture06.pdf]
+
+---
+# ② 행렬 `\(\color{red}{\mathbf{M}}\)`이 어떨때 WSSD가 최대가 될까?
+
+.center[
+![:scale 80%](figs/harris-corner-detection-14.png)
+]
+
+.footer-right[http://www.cse.psu.edu/~rtc12/CSE486/lecture06.pdf]
+
+---
+# ② 행렬 `\(\color{red}{\mathbf{M}}\)`이 어떨때 WSSD가 최대가 될까?
+
+.center[
+![:scale 80%](figs/harris-corner-detection-13.png)
+]
+
+.footer-right[http://www.cse.psu.edu/~rtc12/CSE486/lecture06.pdf]
+
+---
+# 해리스 코너 검출기 (Harris Corner Detector)
+
+.pull-up-4[
+.font90[
+.pull-left[
+1. 이미지 그래디언트를 구한다. (픽셀당)
+`$$\begin{align}I_x &amp;= S_x \otimes I \\ I_y &amp;= S_y \otimes I\end{align}$$`
+1. 이미지 그래디언트의 곱을 구한다. (픽셀당)
+`$$\begin{align}I_{xx} &amp;= I_x I_x \\ I_{yy} &amp;= I_y I_y \\ I_{xy} &amp;= I_x I_y\end{align}$$`
+1. 이미지 패치의 가중합을 구한다. (픽셀당)
+`$$\begin{align}S_{xx} &amp;= G \otimes I_{xx}\\ S_{yy} &amp;= G \otimes I_{yy} \\ S_{xy} &amp;= G \otimes I_{xy}\end{align}$$`
+]
+
+.pull-right[
+1. 각 픽셀에 대해서 행렬 `\(\color{red}{\mathbf{M}}\)`을 구한다.
+`$$\color{red}{\mathbf{M}}(x,y) = \begin{bmatrix}S_{xx}(x,y) &amp; S_{xy}(x,y)\\ S_{xy}(x,y) &amp; S_{yy}(x,y)\end{bmatrix}$$`
+1. 각 픽셀에 대해서 응답점수 `\(\color{blue}{R}\)`을 구한다.
+`$$\color{blue}{R} = \det(\color{red}{\mathbf{M}}) - \kappa(\text{trace}(\color{red}{\mathbf{M}}))^2$$`
+1. 응답점수 `\(\color{blue}{R}\)`을 이진화(thresholding)한다.
+1. 비-최대값 제거(Non-Maximum Suppresion)를 한다.
+]
+]
+]
+
+.footer-right[http://www.cse.psu.edu/~rtc12/CSE486/lecture06.pdf]
+
+---
+# 해리스 코너 검출기 (Harris Corner Detector)
+
+.pull-up-2[
+.center[
+![:scale 42%](figs/harris-corner-detection-11.png)
+]
+]
+
+---
+class: inverse, center, middle, title-slide, animated pulse
+# 🧿 쉬-토마시 코너 검출기
+## Shi-Tomasi Corner Detector
+
+---
+# 응답점수 비교
+
+- Harris &amp; Stephens (1988)
+`$$\color{blue}{R} = \det(\color{red}{\mathbf{M}}) - \kappa(\text{trace}(\color{red}{\mathbf{M}}))^2$$`
+- Nobel (1988)
+`$$\color{blue}{R} = \frac{\det(\color{red}{\mathbf{M}})}{\text{trace}(\color{red}{\mathbf{M}})+\epsilon}$$`
+- Shi &amp; Tomasi, "Good Features to Track" (1994)
+`$$\color{blue}{R} = \min(\color{green}{\lambda_1}, \color{green}{\lambda_2})$$`
+
+---
+# 쉬-토마시 코너 검출기
+
+.pull-left-60[
+.pull-up-4[
+.center[
+![:scale 75%](figs/shi-tomasi-space-01.png)
+]
+]
+]
+
+.pull-right-38[
+.pull-down-10[
+.center[
+![:scale 90%](figs/shi-tomasi-criteria.png)
+]
+.font130[
+`$$\color{blue}{R} = \min(\color{green}{\lambda_1}, \color{green}{\lambda_2})$$`
+]
+]
+]
+
+---
+# 쉬-토마시 코너 검출기
+
+.pull-left-60[
+.pull-up-4[
+.center[
+![:scale 75%](figs/shi-tomasi-space-02.png)
+]
+]
+]
+
+.pull-right-38[
+.pull-down-10[
+.center[
+![:scale 90%](figs/shi-tomasi-criteria.png)
+]
+.font130[
+`$$\color{blue}{R} = \min(\color{green}{\lambda_1}, \color{green}{\lambda_2})$$`
+]
+]
+]
+
+---
+# 해리스 코너 검출 vs. 쉬-토마시 코너 검출
+
+.pull-left[
+.pull-down-0[
+.center[
+![:scale 80%](figs/harris-corner-detection-00.png)
+]
+]
+]
+
+.pull-right[
+.pull-down-0[
+.center[
+![:scale 83%](figs/good-features-to-track.png)
+]
+]
+]
+
+---
+class: inverse, center, middle, title-slide, animated pulse
+# 📝 요약
+
+---
+# 영상 특징점 검출
+
+.pull-up-3[
+.pull-left[
+- 영상 특징점
+   - 주위와 확연히 다른 영역
+
+
+.pull-down-6[
+.center[
+![:scale 75%](figs/feature_building.jpg)
+]
+]
+]
+
+.pull-right[
+- 해리스 코너 검출기
+- 쉬-토마스 코너 검출기
+
+
+.pull-down-0[
+.center[
+![:scale 70%](figs/good-features-to-track-00.png)
+]
+]
+]
+]
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="swan/macros.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "default",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+<!-- 
+Ref) https://github.com/gadenbuie/xaringan-logo
+-->
+
+<!--
+<style>
+.logo {
+  background-image: url(xaringan.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  width: 110px;
+  height: 128px;
+  z-index: 0;
+}
+</style>
+-->
+
+<style>
+.logo {
+    position: absolute;
+	top: 94%;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+	text-align: center;
+}
+</style>
+
+<script>
+document
+  .querySelectorAll(
+    '.remark-slide-content' +
+    ':not(.title-slide)' +
+    // add additional classes to exclude here, e.g.
+    ':not(.inverse)' +
+    ':not(.hide-logo)'
+  )
+  .forEach(el => {
+    el.innerHTML += '<div class="logo">컴퓨터 비전</div>';
+  });
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
